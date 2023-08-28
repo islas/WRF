@@ -13,6 +13,12 @@ MODULE module_comm_nesting_dm
 
    INTEGER, PRIVATE :: idim1, idim2, idim3, idim4, idim5, idim6, idim7
 
+  interface
+! Registry-generated communication subroutines.  
+#ifdef DM_PARALLEL
+#include "REGISTRY_COMM_NESTING_DM_subs_decl.inc"
+#endif
+  end interface
 
 CONTAINS
 
@@ -24,11 +30,6 @@ CONTAINS
      USE module_driver_constants
      RETURN
    END SUBROUTINE module_comm_nesting_dm_dummy
-
-! Registry-generated communication subroutines.  
-#ifdef DM_PARALLEL
-#include "REGISTRY_COMM_NESTING_DM_subs.inc"
-#endif
 
 END MODULE module_comm_nesting_dm
 
