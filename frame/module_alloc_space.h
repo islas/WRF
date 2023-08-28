@@ -1,4 +1,4 @@
-   SUBROUTINE ROUTINENAME ( grid,   id, setinitval_in ,  tl_in , inter_domain_in , okay_to_alloc_in, num_bytes_allocated , &
+   module SUBROUTINE ROUTINENAME ( grid,   id, setinitval_in ,  tl_in , inter_domain_in , okay_to_alloc_in, num_bytes_allocated , &
                                   sd31, ed31, sd32, ed32, sd33, ed33, &
                                   sm31 , em31 , sm32 , em32 , sm33 , em33 , &
                                   sp31 , ep31 , sp32 , ep32 , sp33 , ep33 , &
