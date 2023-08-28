@@ -86,7 +86,20 @@ target_include_directories(
 ########################################################################################################################
 set( MODULE_DM module_dm_stubs.F )
 if ( ${USE_MPI} )
-  set( MODULE_DM ${PROJECT_SOURCE_DIR}/external/RSL_LITE/module_dm.F )
+  set( 
+      MODULE_DM 
+      ${PROJECT_SOURCE_DIR}/external/RSL_LITE/module_dm.F
+      ${PROJECT_SOURCE_DIR}/external/RSL_LITE/submodule_dm.F
+      ${PROJECT_SOURCE_DIR}/external/RSL_LITE/submodule_dm_helpers.F
+      )
+
+  set( SUBMODULE_COMM_NESTING
+       # We unfortunately just have to know their names
+       ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_0_def.F
+       ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_1_def.F
+       ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_2_def.F
+       ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_3_def.F
+       )
 endif()
 
 target_sources(
@@ -94,7 +107,11 @@ target_sources(
                 PRIVATE
                   ${WRF_INCLUDE_FILES}
 
+                  module_scalar_tables.F
                   module_configure.F
+                  submodule_configure_init.F
+                  submodule_configure_alt.F
+
                   module_driver_constants.F
                   module_domain_type.F
                   module_domain.F
@@ -119,6 +136,17 @@ target_sources(
                   module_alloc_space_8.F
                   module_alloc_space_9.F
                   
+                  submodule_alloc_space_0.F
+                  submodule_alloc_space_1.F
+                  submodule_alloc_space_2.F
+                  submodule_alloc_space_3.F
+                  submodule_alloc_space_4.F
+                  submodule_alloc_space_5.F
+                  submodule_alloc_space_6.F
+                  submodule_alloc_space_7.F
+                  submodule_alloc_space_8.F
+                  submodule_alloc_space_9.F
+
                   ${CMAKE_BINARY_DIR}/frame/module_state_description.F # GENERATED
                   ${nl_dyn_source}                                     # GENERATED
 
@@ -134,10 +162,10 @@ target_sources(
                   module_comm_dm_2.F
                   module_comm_dm_3.F
                   module_comm_dm_4.F
+
                   module_comm_nesting_dm.F
-                  
-                  
-                                    
+                  ${SUBMODULE_COMM_NESTING}
+
                   module_integrate.F
                   
                   module_io.F

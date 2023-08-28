@@ -130,6 +130,37 @@ add_custom_command(
                       ${FOLDER_COMPILE_TARGET}
                     )
 
+if ( ${USE_MPI} )
+  set(
+      NESTING_COMM
+      ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_decl.inc
+      ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_0_def.F
+      ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_1_def.F
+      ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_2_def.F
+      ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_3_def.F
+      )
+  add_custom_command(
+                      OUTPUT
+                        ${NESTING_COMM}
+                      WORKING_DIRECTORY
+                        ${CMAKE_BINARY_DIR}
+                      # Replicate what exists in project directory for registry
+                      COMMAND
+                      # split across a maximum of 4 files
+                        ${PROJECT_SOURCE_DIR}/arch/subroutine_split.py 
+                          module_comm_nesting_dm                                        # module
+                          ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs.inc     # source
+                          ${CMAKE_BINARY_DIR}/inc/                                      # ouptut dir
+                          ${PROJECT_SOURCE_DIR}/arch/submodule.template.F               # template submod
+                          4                                                             # split amount
+                      COMMAND 
+                        ${CMAKE_COMMAND} -E compare_files ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_decl.inc ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_decl.inc
+                      DEPENDS
+                        ${CMAKE_BINARY_DIR}/inc/nl_config.inc
+                        ${FOLDER_COMPILE_TARGET}
+                      )
+  
+endif()
 
 
 add_custom_target( 
@@ -137,5 +168,6 @@ add_custom_target(
                   DEPENDS
                     ${CMAKE_BINARY_DIR}/inc/nl_config.inc
                     ${CMAKE_BINARY_DIR}/frame/module_state_description.F
+                    ${NESTING_COMM}
                   )
 

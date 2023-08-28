@@ -172,7 +172,8 @@ set( NETCDF               ON )
 
 
 # Special internal flag for profiling compilation
-set( PROFILE_COMPILATION OFF )
+set( PROFILE_COMPILATION  OFF CACHE BOOL "PROFILE_COMPILATION" )
+
 
 
 # From arch/preamble
@@ -320,6 +321,9 @@ add_compile_options(
                     # "$<$<COMPILE_LANG_AND_ID:Fortran,IBMClang>:>"                               #@ IBM LLVM-based Compiler
                     # Todo find how to handle default selection or add new compiler IDs
                     # unknown how to add support for sxf90
+
+                    # line lengths
+                    "$<$<COMPILE_LANG_AND_ID:Fortran,GNU>:-ffree-line-length-none>"                #@ GNU Compiler Collection
                     )
 
 ################################################################################
@@ -495,6 +499,7 @@ add_compile_options(
                     )
 
 if ( ${PROFILE_COMPILATION} )
+  message( STATUS "Attemping to add compilation profiling..." )
   add_compile_options(
                       $<$<COMPILE_LANG_AND_ID:Fortran,GNU>:-ftime-report>
                       )
