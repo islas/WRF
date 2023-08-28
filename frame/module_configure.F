@@ -90,14 +90,8 @@ MODULE module_configure
       INTEGER               :: dummy2
     end subroutine set_scalar_indices_from_config
 
-    module SUBROUTINE get_config_as_buffer( buffer, buflen, ncopied )
-      INTEGER,   INTENT(INOUT) ::  buffer(*)
-      INTEGER,   INTENT(IN)    ::  buflen
-      INTEGER,   INTENT(OUT)   ::  ncopied
-    end SUBROUTINE get_config_as_buffer
-
     module SUBROUTINE init_module_configure
-    end subroutine init_module_configure
+    END SUBROUTINE init_module_configure
   end interface
 CONTAINS
 
