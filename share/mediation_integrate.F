@@ -1533,7 +1533,7 @@ END SUBROUTINE med_latbound_in
 SUBROUTINE med_setup_step ( grid , config_flags )
   ! Driver layer
    USE module_domain    , ONLY : domain
-   USE module_configure , ONLY : grid_config_rec_type
+   USE module_configure , ONLY : grid_config_rec_type, set_scalar_indices_from_config
   ! Model layer
 
    IMPLICIT NONE
