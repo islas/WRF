@@ -63,6 +63,7 @@ set( OPTIMIZATION_LEVEL "" )
 set( WRF_OS             "" )
 set( WRF_MACH           "" )
 
+set( CMAKE_BUILD_TYPE Release CACHE STRING "Build Type" )
 
 ################################################################################
 ## WRF Core selection
