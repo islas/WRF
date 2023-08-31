@@ -9,7 +9,7 @@ set( CMAKE_Fortran_FLAGS_INIT    "{SFC_FLAGS} {FCBASEOPTS} {BYTESWAPIO}" )
 set( CMAKE_C_FLAGS_INIT          "{SCC_FLAGS} {CFLAGS_LOCAL}" )
 
 set( CMAKE_Fortran_FLAGS_DEBUG_INIT    "{FCDEBUG}" )
-set( CMAKE_Fortran_FLAGS_RELEASE_INIT  "{FCOPTIM}" )
+set( CMAKE_Fortran_FLAGS_RELEASE_INIT  "" )
 
 # Project specifics now
 set( WRF_MPI_Fortran_FLAGS  "{DM_FC_FLAGS}" )
