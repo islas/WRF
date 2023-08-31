@@ -90,7 +90,7 @@ if ( ${USE_MPI} )
       MODULE_DM 
       ${PROJECT_SOURCE_DIR}/external/RSL_LITE/module_dm.F
       ${PROJECT_SOURCE_DIR}/external/RSL_LITE/submodule_dm.F
-      ${PROJECT_SOURCE_DIR}/external/RSL_LITE/submodule_dm_helpers.F
+      # ${PROJECT_SOURCE_DIR}/external/RSL_LITE/submodule_dm_helpers.F
       )
 
   set( SUBMODULE_COMM_NESTING
