@@ -5,6 +5,7 @@ enable_language( C )
 enable_language( CXX )
 enable_language( Fortran )
 
+
 project( WRF )
 set( EXPORT_NAME ${PROJECT_NAME} )
 
@@ -22,6 +23,7 @@ set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
 set( CMAKE_Fortran_PREPROCESS          ON )
 
 include( CMakePackageConfigHelpers )
+include( CheckIPOSupported )
 include( c_preproc   )
 include( m4_preproc  )
 include( target_copy )
@@ -30,6 +32,9 @@ include( gitinfo     )
 include( printOption )
 include( wrf_case_setup )
 include( wrf_get_version )
+
+check_ipo_supported( RESULT IPO_SUPPORT )
+
 
 # First grab git info
 wrf_git_commit(
@@ -337,8 +342,9 @@ if ( DEFINED CMAKE_TOOLCHAIN_FILE )
   print_option( WRF_CONFIG         20 ${BOLD_CYAN} )
 endif()
 
-
 print_option( CMAKE_BUILD_TYPE 20 ${BOLD_CYAN} )
+print_option( IPO_SUPPORT      20 ${BOLD_CYAN} )
+
 print_option( WRF_CORE         20 ${BOLD_CYAN} )
 print_option( WRF_NESTING      20 ${BOLD_CYAN} )
 print_option( WRF_CASE         20 ${BOLD_CYAN} )
@@ -597,6 +603,13 @@ add_library(
             ${PROJECT_NAME}_Core
               STATIC
               )
+if( IPO_SUPPORT )
+  set_target_properties(
+                        ${PROJECT_NAME}_Core
+                        PROPERTIES
+                          INTERPROCEDURAL_OPTIMIZATION TRUE
+                        )
+endif()
 
 # Supplemental to core, or rather should be, some stuff in external is legitimately part of WRF and others
 # are source code from truly external repositories - albeit old versions
