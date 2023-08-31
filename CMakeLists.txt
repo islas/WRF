@@ -641,8 +641,25 @@ if( IPO_SUPPORT )
   set_target_properties(
                         ${PROJECT_NAME}_Core
                         PROPERTIES
-                          INTERPROCEDURAL_OPTIMIZATION TRUE
+                          INTERPROCEDURAL_OPTIMIZATION False
                         )
+
+  # For Intel specifically, make use of IPO effectively
+  if ( ${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel AND ${CMAKE_Fortran_PLATFORM_ID} STREQUAL Linux )
+    message( STATUS "Setting parallel IPO/LTO" )
+    set( CMAKE_Fortran_COMPILE_OPTIONS_IPO -ipo4 -ipo-jobs4 )
+  endif()
+
+  target_compile_options(
+                          ${PROJECT_NAME}_Core
+                          PRIVATE
+                          $<$<COMPILE_LANGUAGE:C>:${CMAKE_C_COMPILE_OPTIONS_IPO}>
+                          $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CXX_COMPILE_OPTIONS_IPO}>
+                          $<$<COMPILE_LANGUAGE:Fortran>:${CMAKE_Fortran_COMPILE_OPTIONS_IPO}>
+                          )
+  
+  
+  
 endif()
 
 # Supplemental to core, or rather should be, some stuff in external is legitimately part of WRF and others
