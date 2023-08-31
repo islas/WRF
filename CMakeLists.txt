@@ -209,6 +209,39 @@ set( LWORDSIZE      4     )
 ## Load options selected and any ancillary logic
 ##
 ################################################################################
+# https://stackoverflow.com/a/47927921
+# Define compile options to be inherited for directories
+define_property(
+                SOURCE
+                PROPERTY   COMPILE_FLAGS 
+                INHERITED
+                BRIEF_DOCS "brief-doc"
+                FULL_DOCS  "full-doc"
+                )
+
+define_property(
+                DIRECTORY
+                PROPERTY   COMPILE_FLAGS 
+                INHERITED
+                BRIEF_DOCS "brief-doc"
+                FULL_DOCS  "full-doc"
+                )
+
+# Get current build type flags and put them in there
+if ( ${CMAKE_BUILD_TYPE} STREQUAL "Release" )
+  set_directory_properties(
+                            PROPERTIES
+                              COMPILE_FLAGS
+                              $<$<COMPILE_LANGUAGE:Fortran>:${WRF_FCOPTIM}>
+                            )
+else()
+  # Assume no optimization
+  set_directory_properties(
+                            PROPERTIES
+                              COMPILE_FLAGS
+                              $<$<COMPILE_LANGUAGE:Fortran>:${WRF_FCNOOPT}>
+                            )
+endif()
 
 # Check WRF options
 if ( NOT ${WRF_CORE} IN_LIST WRF_CORE_OPTIONS )
