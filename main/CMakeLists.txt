@@ -78,7 +78,13 @@ foreach ( TARGET ${FOLDER_COMPILE_TARGETS} )
                         )
 
   
-  if ( IPO_SUPPORT )
+  if ( ${ENABLE_IPO_COMPILATION} )
+    set_target_properties(
+                        ${TARGET}
+                        PROPERTIES
+                          INTERPROCEDURAL_OPTIMIZATION TRUE
+                        )
+
     if ( ${CMAKE_VERSION} VERSION_LESS 3.24 )
       target_link_libraries( 
                         ${TARGET}

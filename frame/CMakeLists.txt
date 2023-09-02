@@ -90,16 +90,11 @@ if ( ${USE_MPI} )
       MODULE_DM 
       ${PROJECT_SOURCE_DIR}/external/RSL_LITE/module_dm.F
       ${PROJECT_SOURCE_DIR}/external/RSL_LITE/submodule_dm.F
-      # ${PROJECT_SOURCE_DIR}/external/RSL_LITE/submodule_dm_helpers.F
+      ${PROJECT_SOURCE_DIR}/external/RSL_LITE/submodule_dm_helpers_0.F
+      ${PROJECT_SOURCE_DIR}/external/RSL_LITE/submodule_dm_helpers_1.F
+      ${PROJECT_SOURCE_DIR}/external/RSL_LITE/submodule_dm_helpers_2.F
+      ${PROJECT_SOURCE_DIR}/external/RSL_LITE/submodule_dm_helpers_3.F
       )
-
-  set( SUBMODULE_COMM_NESTING
-       # We unfortunately just have to know their names
-       ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_0_def.F
-       ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_1_def.F
-       ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_2_def.F
-       ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_NESTING_DM_subs_3_def.F
-       )
 endif()
 
 target_sources(
@@ -164,7 +159,10 @@ target_sources(
                   module_comm_dm_4.F
 
                   module_comm_nesting_dm.F
-                  ${SUBMODULE_COMM_NESTING}
+                  # These come from tools/ preprocessing
+                  ${COMM_NESTING_SUBS}
+                  ${COMM_DM_PERIOD_SUBS}
+                  ${COMM_DM_SUBS}
 
                   module_integrate.F
                   

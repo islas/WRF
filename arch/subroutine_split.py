@@ -27,7 +27,7 @@ def main():
   submod = fp.read()
   fp.close()
 
-  
+  submodDeclWrapper = "interface\n{subs}\nend interface"
 
   subroutineFormat = "module subroutine {name}{rest}\nend subroutine {name}\n"
   submodDecl = ""
@@ -53,7 +53,7 @@ def main():
     idx = ( idx + 1 ) % numSubmodFiles
 
   with open( outputDir + "/" + prefix + declSuffix, "w" ) as f :
-    f.write( submodDecl )
+    f.write( submodDeclWrapper.format( subs=submodDecl ) )
     f.close()
 
   # Now write out source files
