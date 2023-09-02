@@ -1,5 +1,5 @@
 #define NNNMAX 9
-#define NNN 0
+#define NNN 4
 #define ROUTINENAME alloc_space_field_core_4
 
 submodule( module_alloc_space_4 ) ALLOC_SPACE
