@@ -2,7 +2,7 @@ name: Regression Suite
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
     types:    [ labeled ]
 
@@ -15,12 +15,15 @@ jobs:
       pull-requests: write
     steps:
     - uses: actions/checkout@v3
-    - name: Run test 0
+      with: 
+        submodules: true
+
+    - name: Test GNU Compilation
       run: |
         ./hpc-workflows/.ci/runner.py .ci/wrf_arw_tests.json gnu -s LOCAL -d ..
 
     - name : Remove 'test' label
-      if : ${{ github.event.label.name == 'test' }}
+      if : ${{ !cancelled() && github.event.label.name == 'test' }}
       env:
         PR_NUMBER: ${{ github.event.number }}
       run: |
