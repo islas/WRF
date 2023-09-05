@@ -163,81 +163,81 @@ if ( ${USE_MPI} )
                         ${FOLDER_COMPILE_TARGET}
                       )
 
-  set( NUM_SPLIT_COMM_DM 6 )
-  math( EXPR NUM_SPLIT_COMM_DM_LOOP "${NUM_SPLIT_COMM_DM} - 1" )
+  # set( NUM_SPLIT_COMM_DM 6 )
+  # math( EXPR NUM_SPLIT_COMM_DM_LOOP "${NUM_SPLIT_COMM_DM} - 1" )
   
 
-  set( COMM_DM_PERIOD_DECL ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_PERIOD_subs_decl.inc )
-  set( COMM_DM_PERIOD_SUBS       )
-  foreach( n RANGE 0 ${NUM_SPLIT_COMM_DM_LOOP} )
-    list( APPEND COMM_DM_PERIOD_SUBS ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_PERIOD_subs_${n}_def.F )
-  endforeach()
+  # set( COMM_DM_PERIOD_DECL ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_PERIOD_subs_decl.inc )
+  # set( COMM_DM_PERIOD_SUBS       )
+  # foreach( n RANGE 0 ${NUM_SPLIT_COMM_DM_LOOP} )
+  #   list( APPEND COMM_DM_PERIOD_SUBS ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_PERIOD_subs_${n}_def.F )
+  # endforeach()
 
-  add_custom_command(
-                      OUTPUT
-                        ${COMM_DM_PERIOD_SUBS}
-                        ${COMM_DM_PERIOD_DECL}
-                      WORKING_DIRECTORY
-                        ${CMAKE_BINARY_DIR}
-                      # Replicate what exists in project directory for registry
-                      COMMAND
-                      # split across a maximum of 4 files
-                        ${PROJECT_SOURCE_DIR}/arch/subroutine_split.py 
-                          module_comm_dm_4_                                             # module
-                          ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_PERIOD_subs.inc      # source
-                          ${CMAKE_BINARY_DIR}/inc/                                      # ouptut dir
-                          ${PROJECT_SOURCE_DIR}/arch/submodule.template.F               # template submod
-                          ${NUM_SPLIT_COMM_DM}                                          # split amount
-                      COMMAND 
-                        ${CMAKE_COMMAND} -E compare_files ${COMM_DM_PERIOD_DECL} ${COMM_DM_PERIOD_DECL}
-                      DEPENDS
-                        ${CMAKE_BINARY_DIR}/inc/nl_config.inc
-                        ${FOLDER_COMPILE_TARGET}
-                      )
+  # add_custom_command(
+  #                     OUTPUT
+  #                       ${COMM_DM_PERIOD_SUBS}
+  #                       ${COMM_DM_PERIOD_DECL}
+  #                     WORKING_DIRECTORY
+  #                       ${CMAKE_BINARY_DIR}
+  #                     # Replicate what exists in project directory for registry
+  #                     COMMAND
+  #                     # split across a maximum of 4 files
+  #                       ${PROJECT_SOURCE_DIR}/arch/subroutine_split.py 
+  #                         module_comm_dm_4_                                             # module
+  #                         ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_PERIOD_subs.inc      # source
+  #                         ${CMAKE_BINARY_DIR}/inc/                                      # ouptut dir
+  #                         ${PROJECT_SOURCE_DIR}/arch/submodule.template.F               # template submod
+  #                         ${NUM_SPLIT_COMM_DM}                                          # split amount
+  #                     COMMAND 
+  #                       ${CMAKE_COMMAND} -E compare_files ${COMM_DM_PERIOD_DECL} ${COMM_DM_PERIOD_DECL}
+  #                     DEPENDS
+  #                       ${CMAKE_BINARY_DIR}/inc/nl_config.inc
+  #                       ${FOLDER_COMPILE_TARGET}
+  #                     )
 
-  set( NUM_COMM_DM_SUBS 4 )
-  math( EXPR NUM_COMM_DM_SUBS_LOOP "${NUM_COMM_DM_SUBS} - 1" )
-  set( COMM_DM_DECL )
-  set( COMM_DM_SUBS )
+  # set( NUM_COMM_DM_SUBS 4 )
+  # math( EXPR NUM_COMM_DM_SUBS_LOOP "${NUM_COMM_DM_SUBS} - 1" )
+  # set( COMM_DM_DECL )
+  # set( COMM_DM_SUBS )
 
-  foreach( i RANGE 0 ${NUM_COMM_DM_SUBS_LOOP} )
+  # foreach( i RANGE 0 ${NUM_COMM_DM_SUBS_LOOP} )
 
-    set( COMM_DM_DECL_${i}   ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_${i}_subs_decl.inc )
-    set( COMM_DM_SUBS_${i}   )
+  #   set( COMM_DM_DECL_${i}   ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_${i}_subs_decl.inc )
+  #   set( COMM_DM_SUBS_${i}   )
 
-    foreach( n RANGE 0 ${NUM_SPLIT_COMM_DM_LOOP} )
-      list( APPEND COMM_DM_SUBS_${i} ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_${i}_subs_${n}_def.F )
-    endforeach()
+  #   foreach( n RANGE 0 ${NUM_SPLIT_COMM_DM_LOOP} )
+  #     list( APPEND COMM_DM_SUBS_${i} ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_${i}_subs_${n}_def.F )
+  #   endforeach()
 
-    list( APPEND COMM_DM_DECL ${COMM_DM_SUBS_${i}} )
-    list( APPEND COMM_DM_SUBS ${COMM_DM_SUBS_${i}} )
+  #   list( APPEND COMM_DM_DECL ${COMM_DM_SUBS_${i}} )
+  #   list( APPEND COMM_DM_SUBS ${COMM_DM_SUBS_${i}} )
 
-    add_custom_command(
-                        OUTPUT
-                          ${COMM_DM_DECL_${i}}
-                          ${COMM_DM_SUBS_${i}}
-                        WORKING_DIRECTORY
-                          ${CMAKE_BINARY_DIR}
-                        # Replicate what exists in project directory for registry
-                        COMMAND
-                        # split across a maximum of 4 files
-                          ${PROJECT_SOURCE_DIR}/arch/subroutine_split.py 
-                            module_comm_dm_${i}                                           # module
-                            ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_${i}_subs.inc        # source
-                            ${CMAKE_BINARY_DIR}/inc/                                      # ouptut dir
-                            ${PROJECT_SOURCE_DIR}/arch/submodule.template.F               # template submod
-                            ${NUM_SPLIT_COMM_DM}                                          # split amount
-                        COMMAND 
-                          ${CMAKE_COMMAND} -E compare_files ${COMM_DM_DECL_${i}} ${COMM_DM_DECL_${i}}
-                        DEPENDS
-                          ${CMAKE_BINARY_DIR}/inc/nl_config.inc
-                          ${FOLDER_COMPILE_TARGET}
-                        )
-  endforeach()
+  #   add_custom_command(
+  #                       OUTPUT
+  #                         ${COMM_DM_DECL_${i}}
+  #                         ${COMM_DM_SUBS_${i}}
+  #                       WORKING_DIRECTORY
+  #                         ${CMAKE_BINARY_DIR}
+  #                       # Replicate what exists in project directory for registry
+  #                       COMMAND
+  #                       # split across a maximum of 4 files
+  #                         ${PROJECT_SOURCE_DIR}/arch/subroutine_split.py 
+  #                           module_comm_dm_${i}                                           # module
+  #                           ${CMAKE_BINARY_DIR}/inc/REGISTRY_COMM_DM_${i}_subs.inc        # source
+  #                           ${CMAKE_BINARY_DIR}/inc/                                      # ouptut dir
+  #                           ${PROJECT_SOURCE_DIR}/arch/submodule.template.F               # template submod
+  #                           ${NUM_SPLIT_COMM_DM}                                          # split amount
+  #                       COMMAND 
+  #                         ${CMAKE_COMMAND} -E compare_files ${COMM_DM_DECL_${i}} ${COMM_DM_DECL_${i}}
+  #                       DEPENDS
+  #                         ${CMAKE_BINARY_DIR}/inc/nl_config.inc
+  #                         ${FOLDER_COMPILE_TARGET}
+  #                       )
+  # endforeach()
 
   set( COMM_NESTING_SUBS   ${COMM_NESTING_SUBS}   PARENT_SCOPE )
-  set( COMM_DM_PERIOD_SUBS ${COMM_DM_PERIOD_SUBS} PARENT_SCOPE )
-  set( COMM_DM_SUBS        ${COMM_DM_SUBS}        PARENT_SCOPE )
+  # set( COMM_DM_PERIOD_SUBS ${COMM_DM_PERIOD_SUBS} PARENT_SCOPE )
+  # set( COMM_DM_SUBS        ${COMM_DM_SUBS}        PARENT_SCOPE )
 
 endif()
 
@@ -248,7 +248,7 @@ add_custom_target(
                     ${CMAKE_BINARY_DIR}/inc/nl_config.inc
                     ${CMAKE_BINARY_DIR}/frame/module_state_description.F
                     ${COMM_NESTING_DECL}
-                    ${COMM_DM_PERIOD_DECL}
-                    ${COMM_DM_DECL}
+                    # ${COMM_DM_PERIOD_DECL}
+                    # ${COMM_DM_DECL}
                   )
 

@@ -443,7 +443,6 @@ add_subdirectory( confcheck )
 ## Adjust flags based on compiler and linker used
 ##
 ################################################################################
-set( CMAKE_INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO_COMPILATION} )
 
 # https://stackoverflow.com/a/47927921
 # Define compile options to be inherited for directories
@@ -487,6 +486,7 @@ if ( ${USE_IPO} )
     message( STATUS "IPO/LTO not supported, request ignored" )
   endif()
 endif()
+set( CMAKE_INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO_COMPILATION} )
 
 # This is really ugly but such is the cost of supporting many ways to say the same thing
 # https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER_ID.html
