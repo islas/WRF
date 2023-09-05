@@ -3,7 +3,7 @@ MODULE module_comm_dm_4_
 
    IMPLICIT NONE
 
-  !  PRIVATE module_comm_dm_dummy_4
+   PRIVATE module_comm_dm_dummy_4
 
 #ifdef DM_PARALLEL
    INTEGER, PRIVATE :: rsl_sendw_p, rsl_sendbeg_p, rsl_recvw_p, rsl_recvbeg_p
@@ -13,23 +13,22 @@ MODULE module_comm_dm_4_
 
    INTEGER, PRIVATE :: idim1, idim2, idim3, idim4, idim5, idim6, idim7
 
-! Registry-generated communication subroutines.  
-#ifdef DM_PARALLEL
-#include "REGISTRY_COMM_DM_PERIOD_subs_decl.inc"
-#endif
 
 CONTAINS
 
    ! Avoid complaints about empty CONTAINS from some compilers.  
-  !  SUBROUTINE module_comm_dm_dummy_4
-  !    USE module_domain, ONLY:domain
-  !    USE module_configure, ONLY:grid_config_rec_type,in_use_for_config
-  !    USE module_state_description, ONLY:PARAM_FIRST_SCALAR
-  !    USE module_driver_constants
-  !    RETURN
-  !  END SUBROUTINE module_comm_dm_dummy_4
+   SUBROUTINE module_comm_dm_dummy_4
+     USE module_domain, ONLY:domain
+     USE module_configure, ONLY:grid_config_rec_type,in_use_for_config
+     USE module_state_description, ONLY:PARAM_FIRST_SCALAR
+     USE module_driver_constants
+     RETURN
+   END SUBROUTINE module_comm_dm_dummy_4
 
-
+! Registry-generated communication subroutines.  
+#ifdef DM_PARALLEL
+#include "REGISTRY_COMM_DM_PERIOD_subs.inc"
+#endif
 
 END MODULE module_comm_dm_4_
 
