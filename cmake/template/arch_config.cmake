@@ -5,6 +5,9 @@ set( MPI_C_COMPILER       "{DM_CC}" )
 set( CMAKE_Fortran_COMPILER "{SFC}" )
 set( CMAKE_C_COMPILER       "{SCC}" )
 
+set( CMAKE_C_PREPROCESSOR       "{CPP}" )
+set( CMAKE_C_PREPROCESSOR_FLAGS  {CPP_FLAGS} )
+
 set( CMAKE_Fortran_FLAGS_INIT    "{SFC_FLAGS} {FCBASEOPTS} {BYTESWAPIO}" )
 set( CMAKE_C_FLAGS_INIT          "{SCC_FLAGS} {CFLAGS_LOCAL}" )
 
