@@ -189,6 +189,7 @@ else
 fi
 
 PROBS=FALSE
+USENETCDFPAR=0
 if [ -n "$NETCDFPAR" ] ; then
   NETCDF="$NETCDFPAR"
   if [ ! -e $NETCDF_C/bin/nc-config ] ; then
@@ -222,6 +223,7 @@ if [ -n "$NETCDFPAR" ] ; then
 else
   export USENETCDFPAR=0
 fi
+export USENETCDFPAR
 
 if  test -z "$NETCDF"  ; then
   echo ' '
