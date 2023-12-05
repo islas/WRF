@@ -15,7 +15,9 @@
 *.mod
 *.a
 configure.wrf*
-*.backup
+*.backup*
+rsl.*
+*.log
 *.f90
 
 # Out-of-source build locations
