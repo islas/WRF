@@ -158,6 +158,8 @@ target_sources(
 # Disable optimizations on these files always
 set_source_files_properties(
                             ${nl_dyn_source}
+                            module_configure.F
+                            TARGET_DIRECTORY ${PROJECT_NAME}_Core
                             PROPERTIES
                             COMPILE_FLAGS
                               $<$<COMPILE_LANGUAGE:Fortran>:${WRF_FCNOOPT}>
