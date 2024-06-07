@@ -108,6 +108,14 @@ jobs:
                                              -e ./hpc-workflows/.ci/runner.py                                               \
                                              -s >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+    
+    - name: Upload test logs
+      if  : ${{ failure() }}
+      uses : actions/upload-artifact@4
+      with:
+        name: $LOG_SUFFIX-${{ inputs.id }}_logfiles
+        path: ${{ inputs.archive }}/$LOG_SUFFIX/${{ inputs.id }}/
+        
 
     - name: Clean up testing directories
       if : ${{ success() }}
