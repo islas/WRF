@@ -194,28 +194,6 @@ jobs:
             archive : /glade/work/aislas/github/runners/wrf/derecho/logs/
             account : NMMM0012
             name : "em_ideal Tests"
-            id   : em_ideal-tests
-            fileroot : wrf_em_real_tests
-            args : -j='{"node_select":{"-l ":{"select":1}}}'
-            pool  : 9
-            tpool : 4
-            mkdirs : true
-            tests :
-              - em_real0
-              - em_real1
-              - em_real2
-              - em_real3
-              - em_realA
-              - em_realB
-              - em_realC
-              - em_realD
-              - em_realE
-               
-            
-          - host : derecho
-            archive : /glade/work/aislas/github/runners/wrf/derecho/logs/
-            account : NMMM0012
-            name : "em_ideal Tests"
             fileroot : wrf_em_ideal_tests
             args : -j='{"node_select":{"-l ":{"select":1}}}'
             pool  : 5
@@ -231,7 +209,49 @@ jobs:
 
     uses : ./.github/workflows/wrf_test.yml
     with :
-      label    : em_real-tests
+      label    : em_ideal-tests
+      archive  : ${{ matrix.testSet.archive }}
+      name     : ${{ matrix.testSet.name }}
+      id       : ${{ matrix.testSet.id }}
+      host     : ${{ matrix.testSet.host }}
+      fileroot : ${{ matrix.testSet.fileroot }}
+      account  : ${{ matrix.testSet.account }}
+      tests    : ${{ toJson( matrix.testSet.tests ) }}
+      mkdirs   : ${{ matrix.testSet.mkdirs }}
+      args     : ${{ matrix.testSet.args }}
+      pool     : ${{ matrix.testSet.pool }}
+      tpool    : ${{ matrix.testSet.tpool }}
+    permissions:
+      contents: read
+      pull-requests: write
+    name : Test ${{ matrix.testSet.name }} on ${{ matrix.testSet.host }}
+
+
+  chemtests:
+    if : ${{ github.event.label.name == 'em_chem-tests' || github.event.label.name == 'all-tests' || github.event_name == 'push' }}
+    strategy:
+      max-parallel: 4
+      fail-fast: false
+      matrix:
+      
+        testSet  :
+          - host : derecho
+            archive : /glade/work/aislas/github/runners/wrf/derecho/logs/
+            account : NMMM0012
+            name : "em_chem Tests"
+            id   : em_chem-tests
+            fileroot : wrf_em_chem_tests
+            args : -j='{"node_select":{"-l ":{"select":1}}}'
+            pool  : 9
+            tpool : 4
+            mkdirs : true
+            tests :
+              - em_chem
+              - em_chem_kpp
+
+    uses : ./.github/workflows/wrf_test.yml
+    with :
+      label    : em_chem-tests
       archive  : ${{ matrix.testSet.archive }}
       name     : ${{ matrix.testSet.name }}
       id       : ${{ matrix.testSet.id }}
