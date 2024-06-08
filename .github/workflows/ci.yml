@@ -272,6 +272,7 @@ jobs:
   removeAllLabel :
     if : ${{ !cancelled() && github.event.label.name == 'all-tests' }}
     name : Remove 'all-tests' label
+    runs-on: ubuntu-latest
     needs : [ buildtests, realtests, idealtests, chemtests ]
     steps: 
       - name : Remove '${{ github.event.label.name }}' label
