@@ -114,7 +114,7 @@ jobs:
       uses : actions/upload-artifact@v4
       with:
         name: $LOG_SUFFIX-${{ inputs.id }}_logfiles
-        path: ${{ inputs.archive }}/$LOG_SUFFIX/${{ inputs.id }}/
+        path: ${{ inputs.archive }}/${{ env.LOG_PREFIX }}/${{ inputs.id }}/
         
 
     - name: Clean up testing directories
