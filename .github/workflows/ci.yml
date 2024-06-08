@@ -194,6 +194,7 @@ jobs:
             archive : /glade/work/aislas/github/runners/wrf/derecho/logs/
             account : NMMM0012
             name : "em_ideal Tests"
+            id   : em_ideal-tests
             fileroot : wrf_em_ideal_tests
             args : -j='{"node_select":{"-l ":{"select":1}}}'
             pool  : 5
