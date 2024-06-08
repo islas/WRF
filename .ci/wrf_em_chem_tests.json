@@ -43,10 +43,10 @@
         },
         "priority"    : { "-l " : { "job_priority" : "economy"       } }
       },
-      "timelimit" : "00:15:00",
+      "timelimit" : "00:30:00",
       "arguments"  : 
       {
-        "base_env_numprocs"          : [ "-e", "NUM_PROCS=8" ],
+        "base_env_numprocs"          : [ "-e", "NUM_PROCS=16" ],
         ".*testcase.*::global_env"     :
         [ 
           "-e", "DATA=/glade/work/aislas/github/data/wrf/regtest/Data/",
