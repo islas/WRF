@@ -275,14 +275,14 @@ jobs:
     needs : [ buildtests, realtests, idealtests, chemtests ]
     steps: 
       - name : Remove '${{ github.event.label.name }}' label
-          env:
-            PR_NUMBER: ${{ github.event.number }}
-          run: |
-            curl \
-              -X DELETE \
-              -H "Accept: application/vnd.github.v3+json" \
-              -H 'Authorization: token ${{ github.token }}' \
-              https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ github.event.label.name }}
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          curl \
+            -X DELETE \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H 'Authorization: token ${{ github.token }}' \
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ github.event.label.name }}
         
 
 
