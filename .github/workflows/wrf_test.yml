@@ -111,7 +111,7 @@ jobs:
     
     - name: Upload test logs
       if  : ${{ failure() }}
-      uses : actions/upload-artifact@4
+      uses : actions/upload-artifact@v4
       with:
         name: $LOG_SUFFIX-${{ inputs.id }}_logfiles
         path: ${{ inputs.archive }}/$LOG_SUFFIX/${{ inputs.id }}/
