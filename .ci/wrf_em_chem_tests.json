@@ -21,9 +21,10 @@
       ".*testcase-mpi.*::exec_mpi" : [ "-p", "mpirun -np $NUM_PROCS" ],
       ".*testcase-omp.*::env"      : [ "-e", "OMP_NUM_THREADS=$NUM_PROCS" ],
 
-      ".*testcase-serial.*::dir"   : [ "-f", ".ci/tests/SCRIPTS/Namelists/weekly/$NAMELIST_DIR/", "-s", "serial_results" ],
-      ".*testcase-omp.*::dir"      : [ "-f", ".ci/tests/SCRIPTS/Namelists/weekly/$NAMELIST_DIR/", "-i", "serial_results" ],
-      ".*testcase-mpi.*::dir"      : [ "-f", ".ci/tests/SCRIPTS/Namelists/weekly/$NAMELIST_DIR/",    "-i", "serial_results" ]
+      ".*testcase.*::namelist_folder" : [ "-f", ".ci/tests/SCRIPTS/Namelists/weekly/$NAMELIST_DIR/" ],
+
+      ".*testcase-serial.*::dir"   : [  "-s", "serial_results/$NAMELIST_DIR/" ],
+      ".*testcase-(omp|mpi).*::dir": [  "-i", "serial_results/$NAMELIST_DIR/" ]
     },
     "hsn.de.hpc"  :
     {
