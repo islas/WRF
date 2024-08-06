@@ -160,11 +160,14 @@ class Stanza():
     # # Now deref
     self.dereference( "FCBASEOPTS" )
 
+    definesToRemove = [ "-DUNDERSCORE", "-DNOUNDERSCORE" ]
+
     # Remove rogue compile commands that should *NOT* even be here
     for keyToSan in self.kvPairs_.keys() :
       self.kvPairs_[ keyToSan ] = configureRepl.sub( r"\1\2", self.kvPairs_[ keyToSan ] ).strip()
       self.kvPairs_[ keyToSan ] = compileObject.sub( r"\1\2", self.kvPairs_[ keyToSan ] ).strip()
-
+      for cppDef in definesToRemove :
+        self.kvPairs_[ keyToSan ] = self.kvPairs_[ keyToSan ].replace( cppDef, "" )
 
     # Now fix certain ones that are mixing programs with flags all mashed into one option
     self.splitIntoFieldAndFlags( "SFC" )
