@@ -32,7 +32,7 @@ jobs:
             account : NMMM0012
             name : "Make Compilation Tests"
             id   : make-tests
-            fileroot : wrf_arw_tests
+            fileroot : wrf_compilation_tests-make
             args : -j='{"node_select":{"-l ":{"select":1}}}'
             pool  : 8
             tpool : 1
