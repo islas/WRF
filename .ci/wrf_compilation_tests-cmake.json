@@ -5,7 +5,7 @@
     "working_directory" : "..",
     "arguments" :
     {
-      "base_env_numprocs"      : [ "-e", "NUM_PROCS=1" ],
+      "base_env_numprocs"      : [ "-e", "NUM_PROCS=8" ],
 
       ".*cmake.*::base_env_dirs"    : [ "-e", "WK_DIR=$PWD,BUILD_DIR=_build_$NAME$DM$SM,INSTALL_DIR=$WK_DIR/install_$NAME$DM$SM"  ],
       ".*cmake.*.::args_compilecmd" : [ "-c", "-p $NAME -d $BUILD_DIR -i $INSTALL_DIR -x -- -DCMAKE_BUILD_TYPE=Release -DWRF_CORE=ARW -DWRF_NESTING=BASIC -DWRF_CASE=EM_REAL $USE_MPI $USE_OPENMP" ],
