@@ -38,7 +38,7 @@
         ".*intel-llvm.*::test_modules"     : [ "intel-oneapi" ],
         ".*pgi.*::test_modules"   : [ "nvhpc" ],
         ".*dm.*::test_mpi_module" : [ "cray-mpich" ],
-        ".*cmake.*::test_cmake_module" : [ "cmake/3.22.0" ]
+        ".*cmake.*::test_cmake_module" : [ "cmake" ]
       }
     }
   },
