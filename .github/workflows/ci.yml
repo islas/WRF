@@ -90,7 +90,6 @@ jobs:
               - make-pgi-dm+sm
               # add new compilation tests here
 
-        testSet  :
           - host : derecho
             hpc-workflows_path : .ci/hpc-workflows
             archive : /glade/work/aislas/github/runners/wrf/derecho/logs/
