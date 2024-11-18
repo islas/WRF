@@ -68,7 +68,7 @@ jobs:
             id   : make-tests
             fileroot : wrf_compilation_tests-make
             args : -j='{"node_select":{"-l ":{"select":1}}}'
-            pool  : 8
+            pool  : 16
             tpool : 1
             mkdirs : true
             tests :
@@ -88,6 +88,36 @@ jobs:
               - make-pgi-sm
               - make-pgi-dm
               - make-pgi-dm+sm
+              # add new compilation tests here
+
+          - host : derecho
+            hpc-workflows_path : .ci/hpc-workflows
+            archive : /glade/work/aislas/github/runners/wrf/derecho/logs/
+            account : NMMM0012
+            name : "CMake Compilation Tests"
+            id   : cmake-tests
+            fileroot : wrf_compilation_tests-cmake
+            args : -j='{"node_select":{"-l ":{"select":1}}}'
+            pool  : 16
+            tpool : 1
+            mkdirs : false
+            tests :
+              - cmake-gnu-serial
+              - cmake-gnu-sm
+              - cmake-gnu-dm
+              - cmake-gnu-dm+sm
+              - cmake-intel-classic-serial
+              - cmake-intel-classic-sm
+              - cmake-intel-classic-dm
+              - cmake-intel-classic-dm+sm
+              - cmake-intel-llvm-serial
+              - cmake-intel-llvm-sm
+              - cmake-intel-llvm-dm
+              - cmake-intel-llvm-dm+sm
+              - cmake-pgi-serial
+              - cmake-pgi-sm
+              - cmake-pgi-dm
+              - cmake-pgi-dm+sm
               # add new compilation tests here
 
     uses : ./.github/workflows/test_workflow.yml
