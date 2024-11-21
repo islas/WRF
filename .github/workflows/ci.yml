@@ -100,7 +100,7 @@ jobs:
             args : -j='{"node_select":{"-l ":{"select":1}}}'
             pool  : 8
             tpool : 1
-            mkdirs : true
+            mkdirs : false
             tests :
               - cmake-gnu-serial
               - cmake-gnu-sm
