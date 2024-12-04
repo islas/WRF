@@ -9,6 +9,11 @@ on:
         required: false
         default: manual
         type: string
+      ref:
+        description: Actual ref to use
+        required: false
+        default: ${{ github.ref }}
+        type: string
       test:
         description: Test to run
         required: true
