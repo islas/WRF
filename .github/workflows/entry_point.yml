@@ -33,6 +33,8 @@ jobs:
     if : ${{ contains( fromJson('["compile-tests","all-tests","tmp-tests"]'), github.event.label.name ) || github.event_name == 'push' }}
     name: Queue Test (${{ github.event_name == 'push' && github.ref_name || github.event.label.name }})
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
     steps:
       - name: Test
         run : |
