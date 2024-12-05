@@ -7,8 +7,13 @@ on:
       event_name:
         description: Event name that triggered this dispatch
         required: false
-        default: manual
+        default: push
         type: string
+      event_number:
+        description: Event number that triggered this dispatch
+        required: false
+        default: 0
+        type: number
       ref:
         description: Actual ref to use
         required: false
@@ -129,6 +134,12 @@ jobs:
       args     : ${{ matrix.testSet.args }}
       pool     : ${{ matrix.testSet.pool }}
       tpool    : ${{ matrix.testSet.tpool }}
+
+      # required to emulate event trigger
+      event_name   : ${{ inputs.event_name }}
+      event_number : ${{ inputs.event_number }}
+      ref          : ${{ inputs.ref }}
+
     # I am leaving this here for posterity if this is to be replicated in private repositories for testing
     permissions:
       contents: read
