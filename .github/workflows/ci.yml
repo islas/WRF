@@ -152,10 +152,36 @@ jobs:
     name: Temp test
     runs-on: ubuntu-latest
     steps:
+    - name: Set pending status
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.checks.create({
+            name: '${{ inputs.test }}',
+            head_sha: '${{ inputs.ref }}',
+            status: 'in_progress',
+            owner: context.repo.owner,
+            repo: context.repo.repo
+          })
     - name: dummy
       id: dummy
       run: |
         echo "Hello World!"
+    
+    - name: Set completed status
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.checks.create({
+            name: '${{ inputs.test }}',
+            head_sha: '${{ inputs.ref }}',
+            status: 'completed',
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            conclusion: "${{ steps.dummy.outcome }}"
+          })
 
   # # In the event that 'all-tests' is used, this final job will be the one to remove
   # # the label from the PR
