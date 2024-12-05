@@ -12,7 +12,7 @@ on:
       ref:
         description: Actual ref to use
         required: false
-        default: ${{ github.ref }}
+        default: null
         type: string
       test:
         description: Test to run
