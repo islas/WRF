@@ -27,6 +27,7 @@ on:
         options:
           - all-tests
           - compile-tests
+          - tmp-tests
 
 
 # https://docs.github.com/en/actions/sharing-automations/reusing-workflows#supported-keywords-for-jobs-that-call-a-reusable-workflow
@@ -145,6 +146,16 @@ jobs:
       contents: read
       pull-requests: write
     name : Test ${{ matrix.testSet.name }} on ${{ matrix.testSet.host }}
+
+  tmp_tests:
+    if : ${{ contains( fromJson('["tmp-tests","all-tests"]'), inputs.test ) || inputs.event_name == 'push' }}
+    name: Temp test
+    runs-on: ubuntu-latest
+    steps:
+    - name: dummy
+      id: dummy
+      run: |
+        echo "Hello World!"
 
   # # In the event that 'all-tests' is used, this final job will be the one to remove
   # # the label from the PR
