@@ -151,6 +151,8 @@ jobs:
     if : ${{ contains( fromJson('["tmp-tests","all-tests"]'), inputs.test ) || inputs.event_name == 'push' }}
     name: Temp test
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
     steps:
     - name: Set pending status
       uses: actions/github-script@v7
@@ -159,7 +161,7 @@ jobs:
         script: |
           github.checks.create({
             name: '${{ inputs.test }}',
-            head_sha: '${{ inputs.ref }}',
+            head_sha: context.sha,
             status: 'in_progress',
             owner: context.repo.owner,
             repo: context.repo.repo
@@ -176,7 +178,7 @@ jobs:
         script: |
           github.checks.create({
             name: '${{ inputs.test }}',
-            head_sha: '${{ inputs.ref }}',
+            head_sha: context.sha,
             status: 'completed',
             owner: context.repo.owner,
             repo: context.repo.repo,
