@@ -167,6 +167,8 @@ jobs:
             check_name : '${{ inputs.test }}'
           })
 
+          core.info( checks )
+
           if ( checks?.check_runs?.length > 0 )
           {
             core.info( "Check run already exists, updating..." )
@@ -191,6 +193,9 @@ jobs:
               status: 'in_progress',
               details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
             })
+  
+            core.info( response )
+
             return response.id
           }
 
