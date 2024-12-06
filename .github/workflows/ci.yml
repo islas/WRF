@@ -167,7 +167,7 @@ jobs:
             check_name : '${{ inputs.test }}'
           })
 
-          core.info( checks )
+          core.info( JSON.stringify( checks ) )
 
           if ( checks?.check_runs?.length > 0 )
           {
@@ -194,7 +194,7 @@ jobs:
               details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
             })
   
-            core.info( response )
+            core.info( JSON.stringify( response ) )
 
             return response.id
           }
