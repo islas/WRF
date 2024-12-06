@@ -163,7 +163,7 @@ jobs:
           const checks = github.rest.checks.listForRef({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            head_sha: context.sha,
+            ref: context.sha,
             check_name : '${{ inputs.test }}'
           })
 
@@ -172,7 +172,6 @@ jobs:
             github.rest.checks.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: context.sha,
               check_run_id: checks.check_runs[0].id,
               status:'in_progress',
               details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
