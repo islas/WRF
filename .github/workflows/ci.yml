@@ -169,7 +169,7 @@ jobs:
 
           core.info( JSON.stringify( checks ) )
 
-          if ( checks?.check_runs?.length > 0 )
+          if ( checks.data.total_count > 0 )
           {
             await core.info( "Check run already exists, updating..." )
             github.rest.checks.update({
@@ -196,7 +196,7 @@ jobs:
   
             core.info( JSON.stringify( response ) )
 
-            return response.id
+            return response.data.id
           }
 
     - name: dummy
