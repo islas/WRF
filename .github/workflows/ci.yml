@@ -155,17 +155,43 @@ jobs:
       checks: write
     steps:
     - name: Set pending status
+      id: check_run_start
       uses: actions/github-script@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          github.rest.checks.create({
-            name: '${{ inputs.test }}',
-            head_sha: context.sha,
-            status: 'in_progress',
+          const checks = github.rest.checks.listForRef({
             owner: context.repo.owner,
-            repo: context.repo.repo
+            repo: context.repo.repo,
+            head_sha: context.sha,
+            check_name : '${{ inputs.test }}'
           })
+
+          if ( checks.check_runs.length > 0 )
+          {
+            github.rest.checks.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: checks.check_runs[0].id,
+              status:'in_progress',
+              details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+            })
+
+            return checks.check_runs[0].id
+          }
+          else
+          {
+            response = github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head_sha: context.sha,
+              name: '${{ inputs.test }}',
+              status: 'in_progress',
+              details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+            })
+            return response.id
+          }
+
     - name: dummy
       id: dummy
       run: |
@@ -176,12 +202,11 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          github.rest.checks.create({
-            name: '${{ inputs.test }}',
-            head_sha: context.sha,
-            status: 'completed',
+          github.rest.checks.update({
             owner: context.repo.owner,
             repo: context.repo.repo,
+            check_run_id: ${{ steps.check_run_start.outputs.result }}
+            status: 'completed',
             conclusion: "${{ steps.dummy.outcome }}"
           })
 
