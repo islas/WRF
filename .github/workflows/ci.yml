@@ -169,6 +169,7 @@ jobs:
 
           if ( checks?.check_runs?.length > 0 )
           {
+            core.info( "Check run already exists, updating..." )
             github.rest.checks.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -181,6 +182,7 @@ jobs:
           }
           else
           {
+            core.info( "Check run dose not exist, creating..." )
             response = github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
