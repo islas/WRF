@@ -159,7 +159,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          github.checks.create({
+          github.rest.checks.create({
             name: '${{ inputs.test }}',
             head_sha: context.sha,
             status: 'in_progress',
@@ -176,7 +176,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          github.checks.create({
+          github.rest.checks.create({
             name: '${{ inputs.test }}',
             head_sha: context.sha,
             status: 'completed',
