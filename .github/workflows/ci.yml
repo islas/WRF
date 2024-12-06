@@ -212,7 +212,7 @@ jobs:
           github.rest.checks.update({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            check_run_id: ${{ steps.check_run_start.outputs.result }}
+            check_run_id: ${{ steps.check_run_start.outputs.result }},
             status: 'completed',
             conclusion: "${{ steps.dummy.outcome }}"
           })
