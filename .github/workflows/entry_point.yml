@@ -1,5 +1,5 @@
 name: Regression Suite Entry Point CI/CD
-run-name : ${{ github.event_name == 'push' && 'CI' || github.event.label.name }} (${{ github.event_name }})
+run-name : Queue ${{ github.event_name == 'push' && 'CI' || github.event.label.name }} (${{ github.event_name }})
 
 on:
   push:
