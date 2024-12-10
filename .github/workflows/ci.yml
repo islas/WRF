@@ -231,7 +231,7 @@ jobs:
             target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
             description:  'dummy',
             context:      '${{ inputs.test }}',
-            state:        '${{ contains( fromJson('["success","failure","error"]'),steps.dummy.outcome ) && steps.dummy.outcome || error }}'
+            state:        '${{ contains( fromJson('["success","failure","error"]'),steps.dummy.outcome ) && steps.dummy.outcome || 'error' }}'
           })
 
         # github.rest.checks.update({
