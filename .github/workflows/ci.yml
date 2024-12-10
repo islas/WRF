@@ -152,7 +152,7 @@ jobs:
     name: Temp test
     runs-on: ubuntu-latest
     permissions:
-      checks: write
+      repos: status
     steps:
 
     # Don't use gh checks as they are woefully underdeveloped as a feature leading
