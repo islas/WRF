@@ -84,7 +84,7 @@ jobs:
             sha:        context.sha,
             target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
             description: '${{ inputs.name }}',
-            context:     '${{ inputs.label }}',
+            context:     '${{ inputs.host }}/${{ inputs.id }}',
             state:      'pending'
           })
 
@@ -179,7 +179,7 @@ jobs:
             sha:          context.sha,
             target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
             description:  '${{ inputs.name }}',
-            context:      '${{ inputs.label }}',
+            context:      '${{ inputs.host }}/${{ inputs.id }}',
             state:        '${{ job.status == 'success' && 'success' || 'failure' }}'
           })
     # As noted in ci.yml, this will need to be moved to a separate workflow with pull_request_target
