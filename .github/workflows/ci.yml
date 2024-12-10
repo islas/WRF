@@ -154,50 +154,64 @@ jobs:
     permissions:
       checks: write
     steps:
+
+    # Don't use gh checks as they are woefully underdeveloped as a feature leading
+    # to confusing UI and misplaced metrics
+    # https://github.com/orgs/community/discussions/24616
     - name: Set pending status
       id: check_run_start
       uses: actions/github-script@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const checks = await github.rest.checks.listForRef({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: context.sha,
-            check_name : '${{ inputs.test }}'
+          github.rest.repos.createCommitStatus({
+            owner:      context.repo.owner,
+            repo:       context.repo.repo,
+            sha:        context.sha,
+            target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+            description: 'dummy',
+            context:     '${{ inputs.test }}',
+            state:      'pending'
           })
 
-          core.info( JSON.stringify( checks ) )
+        # const checks = await github.rest.checks.listForRef({
+        #   owner: context.repo.owner,
+        #   repo: context.repo.repo,
+        #   ref: context.sha,
+        #   check_name : '${{ inputs.test }}'
+        # })
 
-          if ( checks.data.total_count > 0 )
-          {
-            await core.info( "Check run already exists, updating..." )
-            github.rest.checks.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              check_run_id: checks.check_runs[0].id,
-              status:'in_progress',
-              details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-            })
+        # core.info( JSON.stringify( checks ) )
 
-            return checks.check_runs[0].id
-          }
-          else
-          {
-            core.info( "Check run dose not exist, creating..." )
-            response = await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              head_sha: context.sha,
-              name: '${{ inputs.test }}',
-              status: 'in_progress',
-              details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-            })
-  
-            core.info( JSON.stringify( response ) )
+        # if ( checks.data.total_count > 0 )
+        # {
+        #   await core.info( "Check run already exists, updating..." )
+        #   github.rest.checks.update({
+        #     owner: context.repo.owner,
+        #     repo: context.repo.repo,
+        #     check_run_id: checks.check_runs[0].id,
+        #     status:'in_progress',
+        #     details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+        #   })
 
-            return response.data.id
-          }
+        #   return checks.check_runs[0].id
+        # }
+        # else
+        # {
+        #   core.info( "Check run dose not exist, creating..." )
+        #   response = await github.rest.checks.create({
+        #     owner: context.repo.owner,
+        #     repo: context.repo.repo,
+        #     head_sha: context.sha,
+        #     name: '${{ inputs.test }}',
+        #     status: 'in_progress',
+        #     details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+        #   })
+
+        #   core.info( JSON.stringify( response ) )
+
+        #   return response.data.id
+        # }
 
     - name: dummy
       id: dummy
@@ -210,14 +224,24 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          github.rest.checks.update({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            check_run_id: ${{ steps.check_run_start.outputs.result }},
-            status: 'completed',
-            details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
-            conclusion: "${{ steps.dummy.outcome }}"
+          github.rest.repos.createCommitStatus({
+            owner:        context.repo.owner,
+            repo:         context.repo.repo,
+            sha:          context.sha,
+            target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+            description:  'dummy',
+            context:      '${{ inputs.test }}',
+            state:        '${{ contains( fromJson('["success","failure","error"]'),steps.dummy.outcome ) && steps.dummy.outcome || error }}'
           })
+
+        # github.rest.checks.update({
+        #   owner: context.repo.owner,
+        #   repo: context.repo.repo,
+        #   check_run_id: ${{ steps.check_run_start.outputs.result }},
+        #   status: 'completed',
+        #   details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+        #   conclusion: "${{ steps.dummy.outcome }}"
+        # })
 
   # # In the event that 'all-tests' is used, this final job will be the one to remove
   # # the label from the PR
