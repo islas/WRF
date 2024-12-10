@@ -1,15 +1,34 @@
 name: Regression Suite
-run-name : ${{ github.event_name == 'push' && 'CI' || github.event.label.name }} (${{ github.event_name }})
+run-name : Run ${{ inputs.event_name == 'push' && 'CI' || inputs.test }} (${{ inputs.event_name }})
 
 on:
-  push:
-    branches: [ master, develop ]
-# See https://stackoverflow.com/a/78444521 and 
-# https://github.com/orgs/community/discussions/26874#discussioncomment-3253755
-# as well as official (but buried) documentation :
-# https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#pull-request-events-for-forked-repositories-2
-  pull_request:
-    types:    [ labeled ]
+  workflow_dispatch:
+    inputs:
+      event_name:
+        description: Event name that triggered this dispatch
+        required: false
+        default: push
+        type: string
+      event_number:
+        description: Event number that triggered this dispatch
+        required: false
+        default: 0
+        type: string
+      ref:
+        description: Actual ref to use
+        required: false
+        default: null
+        type: string
+      test:
+        description: Test to run
+        required: true
+        default: all-tests
+        type: choice
+        options:
+          - all-tests
+          - compile-tests
+          - tmp-tests
+
 
 # https://docs.github.com/en/actions/sharing-automations/reusing-workflows#supported-keywords-for-jobs-that-call-a-reusable-workflow
 # Also https://stackoverflow.com/a/74959635
@@ -30,7 +49,7 @@ on:
 # https://stackoverflow.com/a/68940067
 jobs:
   buildtests:
-    if : ${{ github.event.label.name == 'compile-tests' || github.event.label.name == 'all-tests' || github.event_name == 'push' }}
+    if : ${{ contains( fromJson('["compile-tests","all-tests"]'), inputs.test ) || inputs.event_name == 'push' }}
     strategy:
       max-parallel: 4
       fail-fast: false
@@ -67,6 +86,36 @@ jobs:
               - make-pgi-dm+sm
               # add new compilation tests here
 
+          - host : derecho
+            hpc-workflows_path : .ci/hpc-workflows
+            archive : /glade/work/aislas/github/runners/wrf/derecho/logs/
+            account : NMMM0012
+            name : "CMake Compilation Tests"
+            id   : cmake-tests
+            fileroot : wrf_compilation_tests-cmake
+            args : -j='{"node_select":{"-l ":{"select":1}}}'
+            pool  : 8
+            tpool : 1
+            mkdirs : false
+            tests :
+              - cmake-gnu-serial
+              - cmake-gnu-sm
+              - cmake-gnu-dm
+              - cmake-gnu-dm+sm
+              - cmake-intel-classic-serial
+              - cmake-intel-classic-sm
+              - cmake-intel-classic-dm
+              - cmake-intel-classic-dm+sm
+              - cmake-intel-llvm-serial
+              - cmake-intel-llvm-sm
+              - cmake-intel-llvm-dm
+              - cmake-intel-llvm-dm+sm
+              - cmake-pgi-serial
+              - cmake-pgi-sm
+              - cmake-pgi-dm
+              - cmake-pgi-dm+sm
+              # add new compilation tests here
+
     uses : ./.github/workflows/test_workflow.yml
     with :
       # This should be the only hard-coded value, we don't use ${{ github.event.label.name }}
@@ -86,26 +135,83 @@ jobs:
       args     : ${{ matrix.testSet.args }}
       pool     : ${{ matrix.testSet.pool }}
       tpool    : ${{ matrix.testSet.tpool }}
+
+      # required to emulate event trigger
+      event_name   : ${{ inputs.event_name }}
+      event_number : ${{ inputs.event_number }}
+      ref          : ${{ inputs.ref }}
+
     # I am leaving this here for posterity if this is to be replicated in private repositories for testing
     permissions:
       contents: read
       pull-requests: write
+      statuses: write
     name : Test ${{ matrix.testSet.name }} on ${{ matrix.testSet.host }}
 
-  # In the event that 'all-tests' is used, this final job will be the one to remove
-  # the label from the PR
-  removeAllLabel :
-    if : ${{ !cancelled() && github.event.label.name == 'all-tests' }}
-    name : Remove 'all-tests' label
+  tmp_tests:
+    if : ${{ contains( fromJson('["tmp-tests","all-tests"]'), inputs.test ) || inputs.event_name == 'push' }}
+    name: Temp test
     runs-on: ubuntu-latest
-    needs : [ buildtests ] # Put tests here to make this wait for the tests to complete
-    steps: 
-      - name : Remove '${{ github.event.label.name }}' label
-        env:
-          PR_NUMBER: ${{ github.event.number }}
-        run: |
-          curl \
-            -X DELETE \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H 'Authorization: token ${{ github.token }}' \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ github.event.label.name }}
+    permissions:
+      statuses: write
+    steps:
+
+    # Don't use gh checks as they are woefully underdeveloped as a feature leading
+    # to confusing UI and misplaced metrics
+    # https://github.com/orgs/community/discussions/24616
+    - name: Set pending status
+      id: check_run_start
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.rest.repos.createCommitStatus({
+            owner:      context.repo.owner,
+            repo:       context.repo.repo,
+            sha:        context.sha,
+            target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+            description: 'dummy',
+            context:     '${{ inputs.test }}',
+            state:      'pending'
+          })
+
+    - name: dummy
+      id: dummy
+      run: |
+        echo "Hello World!"
+        sleep 5
+    
+    - name: Set completed status
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.rest.repos.createCommitStatus({
+            owner:        context.repo.owner,
+            repo:         context.repo.repo,
+            sha:          context.sha,
+            target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+            description:  'dummy',
+            context:      '${{ inputs.test }}',
+            state:        '${{ contains( fromJson('["success","failure","error"]'),steps.dummy.outcome ) && steps.dummy.outcome || 'error' }}'
+          })
+
+
+
+  # # In the event that 'all-tests' is used, this final job will be the one to remove
+  # # the label from the PR
+  # removeAllLabel :
+  #   if : ${{ !cancelled() && github.event.label.name == 'all-tests' }}
+  #   name : Remove 'all-tests' label
+  #   runs-on: ubuntu-latest
+  #   needs : [ buildtests ] # Put tests here to make this wait for the tests to complete
+  #   steps: 
+  #     - name : Remove '${{ github.event.label.name }}' label
+  #       env:
+  #         PR_NUMBER: ${{ github.event.number }}
+  #       run: |
+  #         curl \
+  #           -X DELETE \
+  #           -H "Accept: application/vnd.github.v3+json" \
+  #           -H 'Authorization: token ${{ github.token }}' \
+  #           https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ github.event.label.name }}
