@@ -93,6 +93,7 @@ jobs:
         path      : main
         submodules: true
         ref: ${{ inputs.ref }}
+
     
     # Immediately copy out to # of tests to do
     - name: Create testing directories
@@ -179,7 +180,7 @@ jobs:
             target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
             description:  '${{ inputs.name }}',
             context:      '${{ inputs.label }}',
-            state:        '${{ success() && 'success' || 'failure' }}'
+            state:        '${{ job.status == 'success' && 'success' || 'failure' }}'
           })
     # As noted in ci.yml, this will need to be moved to a separate workflow with pull_request_target
     # and strictly controlled usage of the GH token
