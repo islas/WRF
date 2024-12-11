@@ -148,55 +148,6 @@ jobs:
       statuses: write
     name : Test ${{ matrix.testSet.name }} on ${{ matrix.testSet.host }}
 
-  tmp_tests:
-    if : ${{ contains( fromJson('["tmp-tests","all-tests"]'), inputs.test ) || inputs.event_name == 'push' }}
-    name: Temp test
-    runs-on: ubuntu-latest
-    permissions:
-      statuses: write
-    steps:
-
-    # Don't use gh checks as they are woefully underdeveloped as a feature leading
-    # to confusing UI and misplaced metrics
-    # https://github.com/orgs/community/discussions/24616
-    - name: Set pending status
-      id: check_run_start
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          github.rest.repos.createCommitStatus({
-            owner:      context.repo.owner,
-            repo:       context.repo.repo,
-            sha:        context.sha,
-            target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
-            description: 'dummy',
-            context:     '${{ inputs.test }}',
-            state:      'pending'
-          })
-
-    - name: dummy
-      id: dummy
-      run: |
-        echo "Hello World!"
-        sleep 5
-    
-    - name: Set completed status
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          github.rest.repos.createCommitStatus({
-            owner:        context.repo.owner,
-            repo:         context.repo.repo,
-            sha:          context.sha,
-            target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
-            description:  'dummy',
-            context:      '${{ inputs.test }}',
-            state:        '${{ contains( fromJson('["success","failure","error"]'),steps.dummy.outcome ) && steps.dummy.outcome || 'error' }}'
-          })
-
-
 
   # # In the event that 'all-tests' is used, this final job will be the one to remove
   # # the label from the PR

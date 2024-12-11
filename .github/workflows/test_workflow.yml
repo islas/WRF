@@ -169,6 +169,7 @@ jobs:
         include-hidden-files: true
 
     - name: Set completed status
+      if: ${{ always() }}
       uses: actions/github-script@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
