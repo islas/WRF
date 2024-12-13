@@ -305,8 +305,8 @@ DMPARALLEL      =       # 1
 OMPCPP          =       # -D_OPENMP
 OMP             =       # -qopenmp -fpp -auto
 OMPCC           =       # -qopenmp 
-SFC             =       ifort
-SCC             =       icc
+SFC             =       ifort_notfound
+SCC             =       icc_notfound
 CCOMP           =       icc
 DM_FC           =       mpif90 -f90=$(SFC)
 DM_CC           =       mpicc -cc=$(SCC)
@@ -2132,7 +2132,7 @@ DESCRIPTION     =       INTEL ($SFC/$SCC) : oneAPI LLVM
 DMPARALLEL      =       # 1
 OMPCPP          =       # -D_OPENMP
 OMP             =       # -qopenmp -fpp -auto
-OMPCC           =       # -qopenmp
+OMPCC           =       # -qopenmp -auto
 SFC             =       ifx
 SCC             =       icx
 CCOMP           =       icx
