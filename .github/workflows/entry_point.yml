@@ -44,7 +44,7 @@ jobs:
                     "event_name"    : "${{ github.event_name }}",
                     "event_number"  : "${{ github.event.number }}",
                     "test"          : "${{ github.event.label.name }}",
-                    "ref"           : "${{ github.ref }}"
+                    "ref"           : "${{ github.ref }}",
                     "sha"           : "${{ github.sha }}"
                   }
                 }
