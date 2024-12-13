@@ -56,6 +56,9 @@ on :
       ref        :
         required : true
         type     : string
+      sha        :
+        required : true
+        type     : string
       
 
 
@@ -81,7 +84,7 @@ jobs:
           github.rest.repos.createCommitStatus({
             owner:      context.repo.owner,
             repo:       context.repo.repo,
-            sha:        context.sha,
+            sha:        '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
             target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
             description: '${{ inputs.name }}',
             context:     '${{ inputs.host }}/${{ inputs.id }}',
@@ -92,7 +95,7 @@ jobs:
       with:
         path      : main
         submodules: true
-        ref: ${{ inputs.ref }}
+        ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
 
     
     # Immediately copy out to # of tests to do
@@ -177,7 +180,7 @@ jobs:
           github.rest.repos.createCommitStatus({
             owner:        context.repo.owner,
             repo:         context.repo.repo,
-            sha:          context.sha,
+            sha:          '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
             target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
             description:  '${{ inputs.name }}',
             context:      '${{ inputs.host }}/${{ inputs.id }}',
