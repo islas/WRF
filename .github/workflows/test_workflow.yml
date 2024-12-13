@@ -143,7 +143,7 @@ jobs:
         fi
         ./main/${{ inputs.hpc-workflows_path }}/.ci/reporter.py ${{ inputs.archive }}/$LOG_SUFFIX/${{ inputs.id }}/$masterlogLoc/${{ inputs.fileroot }}.log \
                                              -e ./${{ inputs.hpc-workflows_path }}/.ci/runner.py                             \
-                                             -o GITHUB -m # only mark fail steps with gh syntax
+                                             -o GITHUB -m -n # only mark fail steps with gh syntax
 
         echo "Relaying results to summary..."
         
@@ -152,8 +152,10 @@ jobs:
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         ./main/${{ inputs.hpc-workflows_path }}/.ci/reporter.py ${{ inputs.archive }}/$LOG_SUFFIX/${{ inputs.id }}/$masterlogLoc/${{ inputs.fileroot }}.log \
                                              -e ./${{ inputs.hpc-workflows_path }}/.ci/runner.py                                               \
-                                             -s >> $GITHUB_STEP_SUMMARY
+                                             -s -n >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        # We know this is a failure
+        exit 1
 
     - name: Clean up testing directories
       if : ${{ success() }}
