@@ -53,6 +53,9 @@ on :
       event_number: 
         required : true
         type     : string
+      event_label: 
+        required : true
+        type     : string
       ref        :
         required : true
         type     : string
@@ -190,7 +193,7 @@ jobs:
           })
 
     - name : Remove '${{ inputs.label }}' label
-      if : ${{ !cancelled() && inputs.test == inputs.label }}
+      if : ${{ !cancelled() && inputs.event_label == inputs.label }}
       env:
         PR_NUMBER: ${{ github.event.number }}
       run: |
