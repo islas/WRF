@@ -183,18 +183,17 @@ jobs:
             context:      '${{ inputs.host }}/${{ inputs.id }}',
             state:        '${{ job.status == 'success' && 'success' || 'failure' }}'
           })
-    # As noted in ci.yml, this will need to be moved to a separate workflow with pull_request_target
-    # and strictly controlled usage of the GH token
-    # - name : Remove '${{ inputs.label }}' label
-    #   if : ${{ !cancelled() && github.event.label.name == inputs.label }}
-    #   env:
-    #     PR_NUMBER: ${{ github.event.number }}
-    #   run: |
-    #     curl \
-    #       -X DELETE \
-    #       -H "Accept: application/vnd.github.v3+json" \
-    #       -H 'Authorization: token ${{ github.token }}' \
-    #       https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ inputs.label }}
+
+    - name : Remove '${{ inputs.label }}' label
+      if : ${{ !cancelled() && github.event.label.name == inputs.label }}
+      env:
+        PR_NUMBER: ${{ github.event.number }}
+      run: |
+        curl \
+          -X DELETE \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H 'Authorization: token ${{ github.token }}' \
+          https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ inputs.label }}
     
 
 
