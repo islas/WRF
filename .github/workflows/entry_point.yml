@@ -30,13 +30,18 @@ jobs:
     steps:
       - name: Dispatch Regression Suite
         run : |
-          echo "${{ github.event.pull_request.head.repo.fork }}"
-          echo "${{ github.event.pull_request.head.repo.full_name }}"
-          echo "${{ github.event.pull_request.head.repo.owner.name }}"
-          echo "${{ github.event.pull_request.head.repo.owner.id }}"
-          echo "${{ github.event.pull_request.head.repo.owner.url }}"
-          echo "${{ github.event.pull_request.head.repo.owner.repos_url }}"
-          echo "${{ github.event.pull_request.head.repo.owner }}"
+          # echo "${{ github.event.pull_request.head.repo.fork }}"
+          # echo "${{ github.event.pull_request.head.repo.full_name }}"
+          # echo "${{ github.event.pull_request.head.repo.owner.name }}"
+          # echo "${{ github.event.pull_request.head.repo.owner.id }}"
+          # echo "${{ github.event.pull_request.head.repo.owner.url }}"
+          # echo "${{ github.event.pull_request.head.repo.owner.repos_url }}"
+          # echo "${{ github.event.pull_request.head.repo.owner }}"
+          echo "${{ github.event_name == 'push' }"
+          echo "${{ github.event_name == 'push' && github.ref_name || github.event.pull_request.head.repo.full_name }}"
+          echo "${{ github.event_name == 'push' && github.ref_name || github.event.pull_request.head.repo.full_name == github.repository }}"
+          echo "${{ github.event_name == 'push' && github.ref_name || github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref || github.event.pull_request.base.ref }}"
+
           # curl  -L \
           #       -X POST \
           #       -H "Accept: application/vnd.github+json" \
@@ -45,7 +50,7 @@ jobs:
           #       https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/dispatches \
           #       --data-binary @- << EOF
           #       {
-          #         "ref"     : "${{ github.event_name == 'push' && github.ref_name || github.event.pull_request.base.ref }}",
+          #         "ref"     : "${{ github.event_name == 'push' && github.ref_name || github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref || github.event.pull_request.base.ref }}",
           #         "inputs"  :
           #         {
           #           "event_name"    : "${{ github.event_name }}",
