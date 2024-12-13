@@ -115,6 +115,7 @@ jobs:
       event_name   : ${{ inputs.event_name }}
       event_number : ${{ inputs.event_number }}
       ref          : ${{ inputs.ref }}
+      sha          : ${{ inputs.sha }}
 
     # I am leaving this here for posterity if this is to be replicated in private repositories for testing
     permissions:
