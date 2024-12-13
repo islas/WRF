@@ -114,6 +114,7 @@ jobs:
       # required to emulate event trigger
       event_name   : ${{ inputs.event_name }}
       event_number : ${{ inputs.event_number }}
+      event_label  : ${{ inputs.test }}
       ref          : ${{ inputs.ref }}
       sha          : ${{ inputs.sha }}
 

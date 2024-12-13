@@ -141,6 +141,8 @@ jobs:
         ./main/${{ inputs.hpc-workflows_path }}/.ci/reporter.py ${{ inputs.archive }}/$LOG_SUFFIX/${{ inputs.id }}/$masterlogLoc/${{ inputs.fileroot }}.log \
                                              -e ./${{ inputs.hpc-workflows_path }}/.ci/runner.py                             \
                                              -o GITHUB -m # only mark fail steps with gh syntax
+
+        echo "Relaying results to summary..."
         
         # report on them
         echo "# Summary for ${{ join( fromJson( inputs.tests ), ' ' ) }}" >> $GITHUB_STEP_SUMMARY
@@ -188,7 +190,7 @@ jobs:
           })
 
     - name : Remove '${{ inputs.label }}' label
-      if : ${{ !cancelled() && github.event.label.name == inputs.label }}
+      if : ${{ !cancelled() && inputs.test == inputs.label }}
       env:
         PR_NUMBER: ${{ github.event.number }}
       run: |
