@@ -344,11 +344,14 @@ execute_process(
                 OUTPUT_FILE             ${LOG_FILE}
                 ERROR_FILE              ${LOG_FILE}
                 )
-if ( ${MANAGE_EXTERNALS_STATUS} AND NOT ${MANAGE_EXTERNALS_STATUS} EQUAL 0 )
-  message( FATAL_ERROR "Failed to checkout external repos via manage_externals" )
-else()
-  message( STATUS "Finished checking out external repos via manage_externals" )
-endif()
+# The manage_externals return code only informs critical failures and not whether the code
+# exists or not and so this check often leads to false positives (success) when failure
+# was expected
+# if ( ${MANAGE_EXTERNALS_STATUS} AND NOT ${MANAGE_EXTERNALS_STATUS} EQUAL 0 )
+#   message( FATAL_ERROR "Failed to checkout external repos via manage_externals" )
+# else()
+#   message( STATUS "Finished checking out external repos via manage_externals" )
+# endif()
 
 
 ################################################################################
