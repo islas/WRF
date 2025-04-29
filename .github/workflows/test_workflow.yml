@@ -99,7 +99,7 @@ jobs:
       run: |
         filename=$( basename ${{ inputs.config }} )
         echo "rel_dir=$( dirname ${{ inputs.config }} )" >> "$GITHUB_ENV"
-        echo "fileroot=${filename%.*}" >> "$GITHU_ENV"
+        echo "fileroot=${filename%.*}" >> "$GITHUB_ENV"
     
     - uses: actions/checkout@v4
       with:
