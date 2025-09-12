@@ -1,0 +1,49 @@
+{
+  "hosts" :
+  {
+    "derecho" :
+    {
+      "type" : "PBSHost",
+      "resources" :
+      {
+        "cpu" :
+        {
+          "nodes" : 20,
+          "exclusive" : true,
+          "resources" : { "cpus" : 128, "memory" : "256gb" }
+        }
+      },
+      "default_env" : "gnu",
+      "base_env" :
+      {
+        "lmod_path" : "/glade/u/apps/derecho/24.12/spack/opt/spack/lmod/8.7.37/gcc/12.4.0/nr3e/lmod/lmod/init/env_modules_python.py",
+        "env_scripts" : [ "/etc/profile.d/z00_modules.sh" ]
+      },
+      "mapping" :
+      {
+        "ncpus" : [ "cpu", "cpus", "ncpu" ]
+      },
+      "environments" :
+      {
+        "gnu" :
+        {
+          "aliases" : [ "gcc" ],
+          "lmod_cmds" :
+          [
+            { "cmd" : "purge" },
+            { "cmd" : "load", "args" : [ "gcc", "cray-mpich", "netcdf", "cmake" ] }
+          ]
+        }
+      },
+      "queue" : "main",
+      "account" : "NMMM0012"
+    }
+  },
+  "patches" :
+  {
+    "actions" :
+    {
+      "build_ARW_EM_REAL_gnu_Release_dm" : { "resources" : { "derecho" : { "cpus" : 32, "timelimit" : "00:10:00" } } }
+    }
+  }
+}
