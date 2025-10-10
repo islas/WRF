@@ -7562,6 +7562,17 @@ subroutine ext_pio_put_dom_td_real_arr(DataHandle,Element,DateStr,Data,Count,Sta
   integer               ,intent(in)     :: Count
   integer               ,intent(out)    :: Status
 
+  interface
+    subroutine ext_pio_put_var_td_real_arr(DataHandle,Element,DateStr,Var,Data,Count,Status)
+    integer               ,intent(in)     :: DataHandle
+    character*(*)         ,intent(in)     :: Element
+    character*(*)         ,intent(in)     :: DateStr
+    character*(*)         ,intent(in)     :: Var
+    real                  ,intent(in)     :: Data(:)
+    integer               ,intent(in)     :: Count
+    integer               ,intent(out)    :: Status
+    end subroutine ext_pio_put_var_td_real_arr
+  end interface
   call ext_pio_put_var_td_real_arr(DataHandle,Element,DateStr, &
        'E_X_T_D_O_M_A_I_N_M_E_T_A_DATA_' ,Data,Count,Status)
   return
@@ -7588,6 +7599,17 @@ subroutine ext_pio_put_dom_td_integer_arr(DataHandle,Element,DateStr,Data,Count,
   integer               ,intent(in)     :: Count
   integer               ,intent(out)    :: Status
 
+  interface
+    subroutine ext_pio_put_var_td_integer_arr(DataHandle,Element,DateStr,Var,Data,Count,Status)
+    integer               ,intent(in)     :: DataHandle
+    character*(*)         ,intent(in)     :: Element
+    character*(*)         ,intent(in)     :: DateStr
+    character*(*)         ,intent(in)     :: Var
+    integer,               intent(in)     :: Data(:)
+    integer               ,intent(in)     :: Count
+    integer               ,intent(out)    :: Status
+    end subroutine ext_pio_put_var_td_integer_arr
+  end interface
   call ext_pio_put_var_td_integer_arr(DataHandle,Element,DateStr, &
        'E_X_T_D_O_M_A_I_N_M_E_T_A_DATA_'    ,Data,Count,Status)
   return
@@ -7614,6 +7636,17 @@ subroutine ext_pio_put_dom_td_double_arr(DataHandle,Element,DateStr,Data,Count,S
   integer               ,intent(in)     :: Count
   integer               ,intent(out)    :: Status
 
+  interface
+    subroutine ext_pio_put_var_td_double_arr(DataHandle,Element,DateStr,Var,Data,Count,Status)
+    integer               ,intent(in)     :: DataHandle
+    character*(*)         ,intent(in)     :: Element
+    character*(*)         ,intent(in)     :: DateStr
+    character*(*)         ,intent(in)     :: Var
+    real*8                ,intent(in)     :: Data(:)
+    integer               ,intent(in)     :: Count
+    integer               ,intent(out)    :: Status
+    end subroutine ext_pio_put_var_td_double_arr
+  end interface
   call ext_pio_put_var_td_double_arr(DataHandle,Element,DateStr, &
        'E_X_T_D_O_M_A_I_N_M_E_T_A_DATA_'   ,Data,Count,Status)
   return
@@ -7640,6 +7673,17 @@ subroutine ext_pio_put_dom_td_logical_arr(DataHandle,Element,DateStr,Data,Count,
   integer               ,intent(in)     :: Count
   integer               ,intent(out)    :: Status
 
+  interface
+    subroutine ext_pio_put_var_td_logical_arr(DataHandle,Element,DateStr,Var,Data,Count,Status)
+    integer               ,intent(in)     :: DataHandle
+    character*(*)         ,intent(in)     :: Element
+    character*(*)         ,intent(in)     :: DateStr
+    character*(*)         ,intent(in)     :: Var
+    logical               ,intent(in)     :: Data(:)
+    integer               ,intent(in)     :: Count
+    integer               ,intent(out)    :: Status
+    end subroutine ext_pio_put_var_td_logical_arr
+  end interface
   call ext_pio_put_var_td_logical_arr(DataHandle,Element,DateStr, &
        'E_X_T_D_O_M_A_I_N_M_E_T_A_DATA_'    ,Data,Count,Status)
   return
@@ -7690,6 +7734,19 @@ subroutine ext_pio_get_dom_td_real_arr(DataHandle,Element,DateStr,Data,Count,Out
   integer               ,intent(in)     :: Count
   integer               ,intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
+
+  interface
+    subroutine ext_pio_get_var_td_real_arr(DataHandle,Element,DateStr,Var,Data,Count,OutCount,Status)
+    integer               ,intent(in)     :: DataHandle
+    character*(*)         ,intent(in)     :: Element
+    character*(*)         ,intent(in)     :: DateStr
+    character*(*)         ,intent(in)     :: Var
+    real                  ,intent(in)     :: Data(:)
+    integer               ,intent(in)     :: Count
+    integer               ,intent(out)    :: OutCount
+    integer               ,intent(out)    :: Status
+    end subroutine ext_pio_get_var_td_real_arr
+  end interface
   call ext_pio_get_var_td_real_arr(DataHandle,Element,DateStr,          &
        'E_X_T_D_O_M_A_I_N_M_E_T_A_DATA_' ,Data,Count,OutCount,Status)
   return
@@ -7716,6 +7773,19 @@ subroutine ext_pio_get_dom_td_integer_arr(DataHandle,Element,DateStr,Data,Count,
   integer               ,intent(in)     :: Count
   integer               ,intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
+
+  interface
+    subroutine ext_pio_get_var_td_integer_arr(DataHandle,Element,DateStr,Var,Data,Count,OutCount,Status)
+    integer               ,intent(in)     :: DataHandle
+    character*(*)         ,intent(in)     :: Element
+    character*(*)         ,intent(in)     :: DateStr
+    character*(*)         ,intent(in)     :: Var
+    integer               ,intent(in)     :: Data(:)
+    integer               ,intent(in)     :: Count
+    integer               ,intent(out)    :: OutCount
+    integer               ,intent(out)    :: Status
+    end subroutine ext_pio_get_var_td_integer_arr
+  end interface
   call ext_pio_get_var_td_integer_arr(DataHandle,Element,DateStr,          &
        'E_X_T_D_O_M_A_I_N_M_E_T_A_DATA_'    ,Data,Count,OutCount,Status)
   return
@@ -7742,6 +7812,19 @@ subroutine ext_pio_get_dom_td_double_arr(DataHandle,Element,DateStr,Data,Count,O
   integer               ,intent(in)     :: Count
   integer               ,intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
+
+  interface
+    subroutine ext_pio_get_var_td_double_arr(DataHandle,Element,DateStr,Var,Data,Count,OutCount,Status)
+    integer               ,intent(in)     :: DataHandle
+    character*(*)         ,intent(in)     :: Element
+    character*(*)         ,intent(in)     :: DateStr
+    character*(*)         ,intent(in)     :: Var
+    real*8                ,intent(in)     :: Data(:)
+    integer               ,intent(in)     :: Count
+    integer               ,intent(out)    :: OutCount
+    integer               ,intent(out)    :: Status
+    end subroutine ext_pio_get_var_td_double_arr
+  end interface
   call ext_pio_get_var_td_double_arr(DataHandle,Element,DateStr,          &
        'E_X_T_D_O_M_A_I_N_M_E_T_A_DATA_'   ,Data,Count,OutCount,Status)
   return
@@ -7768,6 +7851,19 @@ subroutine ext_pio_get_dom_td_logical_arr(DataHandle,Element,DateStr,Data,Count,
   integer               ,intent(in)     :: Count
   integer               ,intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
+
+  interface
+    subroutine ext_pio_get_var_td_logical_arr(DataHandle,Element,DateStr,Var,Data,Count,OutCount,Status)
+    integer               ,intent(in)     :: DataHandle
+    character*(*)         ,intent(in)     :: Element
+    character*(*)         ,intent(in)     :: DateStr
+    character*(*)         ,intent(in)     :: Var
+    logical               ,intent(in)     :: Data(:)
+    integer               ,intent(in)     :: Count
+    integer               ,intent(out)    :: OutCount
+    integer               ,intent(out)    :: Status
+    end subroutine ext_pio_get_var_td_logical_arr
+  end interface
   call ext_pio_get_var_td_logical_arr(DataHandle,Element,DateStr,          &
        'E_X_T_D_O_M_A_I_N_M_E_T_A_DATA_'    ,Data,Count,OutCount,Status)
   return
