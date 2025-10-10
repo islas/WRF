@@ -697,7 +697,7 @@ subroutine ext_pio_get_dom_ti_real_arr(DataHandle,Element,Data,Count,OutCount,St
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
   integer                               :: XType
-  integer                               :: Len
+  integer(KIND=PIO_OFFSET_KIND)         :: Len
   integer                               :: stat
   real,                  allocatable    :: Buffer(:)
 
@@ -799,7 +799,7 @@ subroutine ext_pio_get_dom_ti_real_sca(DataHandle,Element,Data,Count,OutCount,St
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
   integer                               :: XType
-  integer                               :: Len
+  integer(KIND=PIO_OFFSET_KIND)         :: Len
   integer                               :: stat
   real,                  allocatable    :: Buffer(:)
 
@@ -901,7 +901,7 @@ subroutine ext_pio_get_dom_ti_integer_arr(DataHandle,Element,Data,Count,OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
   integer                               :: XType
-  integer                               :: Len
+  integer(KIND=PIO_OFFSET_KIND)         :: Len
   integer                               :: stat
   integer,               allocatable    :: Buffer(:)
 
@@ -1003,7 +1003,7 @@ subroutine ext_pio_get_dom_ti_integer_sca(DataHandle,Element,Data,Count,OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
   integer                               :: XType
-  integer                               :: Len
+  integer(KIND=PIO_OFFSET_KIND)         :: Len
   integer                               :: stat
   integer,               allocatable    :: Buffer(:)
 
@@ -1105,7 +1105,7 @@ subroutine ext_pio_get_dom_ti_double_arr(DataHandle,Element,Data,Count,OutCount,
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
   integer                               :: XType
-  integer                               :: Len
+  integer(KIND=PIO_OFFSET_KIND)         :: Len
   integer                               :: stat
   real*8,                allocatable    :: Buffer(:)
 
@@ -1207,7 +1207,7 @@ subroutine ext_pio_get_dom_ti_double_sca(DataHandle,Element,Data,Count,OutCount,
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
   integer                               :: XType
-  integer                               :: Len
+  integer(KIND=PIO_OFFSET_KIND)         :: Len
   integer                               :: stat
   real*8,                allocatable    :: Buffer(:)
 
@@ -1309,7 +1309,7 @@ subroutine ext_pio_get_dom_ti_logical_arr(DataHandle,Element,Data,Count,OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
   integer                               :: XType
-  integer                               :: Len
+  integer(KIND=PIO_OFFSET_KIND)         :: Len
   integer                               :: stat
   integer,               allocatable    :: Buffer(:)
 
@@ -1420,7 +1420,7 @@ subroutine ext_pio_get_dom_ti_logical_sca(DataHandle,Element,Data,Count,OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
   integer                               :: XType
-  integer                               :: Len
+  integer(KIND=PIO_OFFSET_KIND)         :: Len
   integer                               :: stat
   integer,               allocatable    :: Buffer(:)
 
@@ -1531,7 +1531,7 @@ subroutine ext_pio_get_dom_ti_char_arr(DataHandle,Element,Data,Status)
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
   integer                               :: XType
-  integer                               :: Len
+  integer(KIND=PIO_OFFSET_KIND)         :: Len
   integer                               :: stat
   
 
@@ -1606,7 +1606,7 @@ subroutine ext_pio_get_dom_ti_char_sca(DataHandle,Element,Data,Status)
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
   integer                               :: XType
-  integer                               :: Len
+  integer(KIND=PIO_OFFSET_KIND)         :: Len
   integer                               :: stat
   
 
@@ -5033,7 +5033,7 @@ subroutine ext_pio_get_var_ti_real_arr(DataHandle,Element,Var,Data,Count,OutCoun
   integer,               intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
-  integer                               :: XLen
+  integer(KIND=PIO_OFFSET_KIND)         :: XLen
   real,                     allocatable :: Buffer(:)
   character (VarNameLen)                :: VarName
   integer                               :: stat
@@ -5140,7 +5140,7 @@ subroutine ext_pio_get_var_ti_real_sca(DataHandle,Element,Var,Data,Count,OutCoun
   integer,               intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
-  integer                               :: XLen
+  integer(KIND=PIO_OFFSET_KIND)         :: XLen
   real,                     allocatable :: Buffer(:)
   character (VarNameLen)                :: VarName
   integer                               :: stat
@@ -5264,7 +5264,7 @@ subroutine ext_pio_get_var_td_real_arr(DataHandle,Element,DateStr,Var,Data,Count
   integer                               :: XType
   integer                               :: NDims
   integer                               :: NAtts
-  integer                               :: Len1
+  integer(KIND=PIO_OFFSET_KIND)         :: Len1
 
   if(Count <= 0) then
     Status = WRF_WARN_ZERO_LENGTH_GET  
@@ -5553,7 +5553,7 @@ subroutine ext_pio_get_var_ti_double_arr(DataHandle,Element,Var,Data,Count,OutCo
   integer,               intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
-  integer                               :: XLen
+  integer(KIND=PIO_OFFSET_KIND)         :: XLen
   real*8,                allocatable    :: Buffer(:)
   character (VarNameLen)                :: VarName
   integer                               :: stat
@@ -5660,7 +5660,7 @@ subroutine ext_pio_get_var_ti_double_sca(DataHandle,Element,Var,Data,Count,OutCo
   integer,               intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
-  integer                               :: XLen
+  integer(KIND=PIO_OFFSET_KIND)         :: XLen
   real*8,                allocatable    :: Buffer(:)
   character (VarNameLen)                :: VarName
   integer                               :: stat
@@ -6073,7 +6073,7 @@ subroutine ext_pio_get_var_ti_integer_arr(DataHandle,Element,Var,Data,Count,OutC
   integer,               intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
-  integer                               :: XLen
+  integer(KIND=PIO_OFFSET_KIND)         :: XLen
   integer,               allocatable    :: Buffer(:)
   character (VarNameLen)                :: VarName
   integer                               :: stat
@@ -6180,7 +6180,7 @@ subroutine ext_pio_get_var_ti_integer_sca(DataHandle,Element,Var,Data,Count,OutC
   integer,               intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
-  integer                               :: XLen
+  integer(KIND=PIO_OFFSET_KIND)         :: XLen
   integer,               allocatable    :: Buffer(:)
   character (VarNameLen)                :: VarName
   integer                               :: stat
@@ -6593,7 +6593,7 @@ subroutine ext_pio_get_var_ti_logical_arr(DataHandle,Element,Var,Data,Count,OutC
   integer,               intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
-  integer                               :: XLen
+  integer(KIND=PIO_OFFSET_KIND)         :: XLen
   integer,               allocatable    :: Buffer(:)
   character (VarNameLen)                :: VarName
   integer                               :: stat
@@ -6700,7 +6700,7 @@ subroutine ext_pio_get_var_ti_logical_sca(DataHandle,Element,Var,Data,Count,OutC
   integer,               intent(out)    :: OutCount
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
-  integer                               :: XLen
+  integer(KIND=PIO_OFFSET_KIND)         :: XLen
   integer,               allocatable    :: Buffer(:)
   character (VarNameLen)                :: VarName
   integer                               :: stat
@@ -7111,7 +7111,7 @@ subroutine ext_pio_get_var_ti_char_arr(DataHandle,Element,Var,Data,Status)
   
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
-  integer                               :: XLen
+  integer(KIND=PIO_OFFSET_KIND)         :: XLen
   
   character (VarNameLen)                :: VarName
   integer                               :: stat
@@ -7202,7 +7202,7 @@ subroutine ext_pio_get_var_ti_char_sca(DataHandle,Element,Var,Data,Status)
   
   integer               ,intent(out)    :: Status
   type(wrf_data_handle) ,pointer        :: DH
-  integer                               :: XLen
+  integer(KIND=PIO_OFFSET_KIND)         :: XLen
   
   character (VarNameLen)                :: VarName
   integer                               :: stat
@@ -8205,7 +8205,7 @@ subroutine ext_pio_read_field(DataHandle,DateStr,Var,Field,FieldType,grid, &
   integer                                      :: VarID
   integer                                      :: NDims
   integer                                      :: NAtts
-  integer(KIND=PIO_OFFSET)                     :: Len
+  integer(KIND=PIO_OFFSET_KIND)                :: Len
   integer                                      :: stat
   integer                                      :: i, j, n, fldsize
   integer                                      :: FType

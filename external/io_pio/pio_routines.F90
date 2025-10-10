@@ -1007,7 +1007,7 @@ subroutine FieldIO(IO,DataHandle,DateStr,Dimens,Starts,Counts,Length,MemoryOrder
   integer                                   :: fldsize, datasize
   integer                                   :: n
   type(wrf_data_handle)      ,pointer       :: DH
-  integer(KIND=PIO_OFFSET)                  :: pioidx
+  integer(KIND=PIO_OFFSET_KIND)             :: pioidx
 
   DH => WrfDataHandles(DataHandle)
   call GetTimeIndex(IO,DataHandle,DateStr,TimeIndex,Status)
@@ -1035,7 +1035,7 @@ subroutine FieldIO(IO,DataHandle,DateStr,Dimens,Starts,Counts,Length,MemoryOrder
  !isbdy = BDY_VAR == DH%vartype(DH%CurrentVariable)
 
   pioidx = TimeIndex
-  call pio_setframe(DH%descVar(DH%CurrentVariable), pioidx)
+  call pio_setframe(DH%file_handle, DH%descVar(DH%CurrentVariable), pioidx)
  !DH%descVar(DH%CurrentVariable)%rec = TimeIndex
 
  !write(unit=0, fmt='(3a,i6)') 'File: ', __FILE__, ', line: ', __LINE__
@@ -1092,7 +1092,7 @@ subroutine FieldBDY(IO,DataHandle,DateStr,NDim,Domains, &
   integer                    ,intent(out)   :: Status
   integer                                   :: TimeIndex
   type(wrf_data_handle)      ,pointer       :: DH
-  integer(KIND=PIO_OFFSET)                  :: pioidx
+  integer(KIND=PIO_OFFSET_KIND)             :: pioidx
 
   DH => WrfDataHandles(DataHandle)
   call GetTimeIndex(IO,DataHandle,DateStr,TimeIndex,Status)
@@ -1105,7 +1105,7 @@ subroutine FieldBDY(IO,DataHandle,DateStr,NDim,Domains, &
   endif
 
   pioidx = TimeIndex
-  call pio_setframe(DH%descVar(DH%CurrentVariable), pioidx)
+  call pio_setframe(DH%file_handle, DH%descVar(DH%CurrentVariable), pioidx)
  !DH%descVar(DH%CurrentVariable)%rec = TimeIndex
   Domains(NDim+1) = TimeIndex
 
@@ -1294,37 +1294,37 @@ subroutine define_pio_iodesc(grid, DH)
    integer(i4) :: communicator, myrank
    integer(i4) :: iostat
 
-   integer(kind=PIO_Offset), &
+   integer(kind=PIO_OFFSET_KIND), &
            dimension((ime - ims + 1) * (jme - jms + 1) * (kme - kms + 1)) &
            :: compdof_3d
-   integer(kind=PIO_Offset), &
+   integer(kind=PIO_OFFSET_KIND), &
            dimension((ime - ims + 1) * (jme - jms + 1) * grid%num_land_cat) &
            :: compdof_3d_land
-   integer(kind=PIO_Offset), &
+   integer(kind=PIO_OFFSET_KIND), &
            dimension((ime - ims + 1) * (jme - jms + 1) * grid%num_soil_cat) &
            :: compdof_3d_soil
-   integer(kind=PIO_Offset), &
+   integer(kind=PIO_OFFSET_KIND), &
            dimension((ime - ims + 1) * (jme - jms + 1) * grid%num_soil_layers) &
            :: compdof_3d_soil_layers
-   integer(kind=PIO_Offset), &
+   integer(kind=PIO_OFFSET_KIND), &
            dimension((ime - ims + 1) * (jme - jms + 1) * grid%num_ext_model_couple_dom) &
            :: compdof_3d_mdl_cpl
-   integer(kind=PIO_Offset), &
+   integer(kind=PIO_OFFSET_KIND), &
            dimension((ime - ims + 1) * (jme - jms + 1) * grid%ensdim) &
            :: compdof_3d_ensemble
-   integer(kind=PIO_Offset), &
+   integer(kind=PIO_OFFSET_KIND), &
            dimension((jme - jms + 1) * (kme - kms + 1) * grid%spec_bdy_width ) &
            :: compdof_3d_xsz, compdof_3d_xez
-   integer(kind=PIO_Offset), &
+   integer(kind=PIO_OFFSET_KIND), &
            dimension((ime - ims + 1) * (kme - kms + 1) * grid%spec_bdy_width ) &
            :: compdof_3d_ysz, compdof_3d_yez
-   integer(kind=PIO_Offset), &
+   integer(kind=PIO_OFFSET_KIND), &
            dimension((jme - jms + 1) * grid%spec_bdy_width ) &
            :: compdof_2d_xs, compdof_2d_xe
-   integer(kind=PIO_Offset), &
+   integer(kind=PIO_OFFSET_KIND), &
            dimension((ime - ims + 1) * grid%spec_bdy_width ) &
            :: compdof_2d_ys, compdof_2d_ye
-   integer(kind=PIO_Offset), &
+   integer(kind=PIO_OFFSET_KIND), &
            dimension((ime - ims + 1) * (jme - jms + 1)) &
            :: compdof_2d
    integer :: dims3d(3), dims2d(2), dims2di(3)
