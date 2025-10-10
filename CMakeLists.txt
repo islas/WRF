@@ -502,11 +502,6 @@ if ( ${USE_JASPER} )
   find_package( Jasper 1.900.1...<1.900.24 )
 endif()
 
-# Optional
-if ( ${USE_PIO} )
-  find_package( PIO QUIET )
-endif()
-
 if ( ${ENABLE_TERRAIN} )
   find_package( RPC )
 endif()
@@ -531,6 +526,12 @@ endif()
 
 # Will need our own finder
 # find_package( GPFS   REQUIRED )
+
+# Even though pio can use netcdf4/pnetcdf it doesn't really inform us
+# of *where* to find them
+if ( ${USE_PIO} )
+  find_package( PIO REQUIRED )
+endif()
 
 # Find this first in case we need to use pnetcdf's netCDF
 # Priority is given to pnetcdf due to performance
@@ -587,6 +588,13 @@ print_option( USE_DOUBLE       20 )
 print_option( USE_MPI          20 )
 print_option( USE_OPENMP       20 )
 print_option( USE_IPO          20 )
+
+# optional IO modes
+print_option( USE_HDF5         20 )
+print_option( USE_JASPER       20 )
+print_option( USE_PIO          20 )
+print_option( USE_PNETCDF      20 )
+
 
 print_option( ENABLE_CHEM      20 )
 print_option( ENABLE_CLM       20 )
@@ -776,6 +784,10 @@ if ( ${ENABLE_CTSM} )
 else()
   #!TODO there are some files that rely on this being 1, but that is never set by the legacy make system
   list( APPEND PROJECT_COMPILE_DEFINITIONS_OPTIONS WRF_USE_CLM )
+endif()
+
+if ( ${PIO_FOUND} )
+  list( APPEND PROJECT_COMPILE_DEFINITIONS_OPTIONS PIO )
 endif()
 
 if ( ${PnetCDF_FOUND} )
