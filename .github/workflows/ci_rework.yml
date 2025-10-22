@@ -54,7 +54,8 @@ on:
 jobs:
   buildcmake:
     if : ${{ contains( fromJson('["compile-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
-    name : Test ${{ matrix.testSet.name }} on ${{ matrix.testSet.host }}
+    name : Test ${{ matrix.workflow.name }} on ${{ matrix.workflow.host }}
+    runs-on: ${{ matrix.workflow.host }}
     strategy:
       max-parallel: 4
       fail-fast: false
