@@ -63,7 +63,7 @@ jobs:
           - host : derecho
             name : "Make Compilation Tests"
             id   : make-tests
-            args : -vr '{ "cpus" : 128 }'
+            args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
             patch : 
               - priority : -99
               - hosts :
@@ -72,6 +72,7 @@ jobs:
                   - queue   : main
             actions :
               - build_cmake_arw_em_real_gnu_release_dm
+              - build_cmake_arw_em_real_gnu_debug_dm
     # I am leaving this here for posterity if this is to be replicated in private repositories for testing
     permissions:
       contents: read
