@@ -8,8 +8,8 @@ def add_build_for_envs( orch ):
   dm_opt = [ "ON", "OFF" ]
   build_types = [ "Release", "Debug" ]
   configurations = { "ARW" : [ "EM_REAL", "EM_FIRE", "EM_B_WAVE" ] }
+  orch.log( f"Creating builds for permutations..." ) 
   for core, env, build_type, sm, dm in itertools.product( configurations, envs, build_types, sm_opt, dm_opt ):
-    orch.log( f"Creating builds for permutation core: {core} env: {env} build_type: {build_type} sm: {sm} dm: {dm}" ) 
     for case in configurations[core]:
       sm_desc = "_sm" if sm == "ON" else ""
       dm_desc = "_dm" if dm == "ON" else ""
