@@ -52,7 +52,7 @@ on:
 #   - < next test >
 # https://stackoverflow.com/a/68940067
 jobs:
-  buildtests:
+  buildcmake:
     if : ${{ contains( fromJson('["compile-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
     name : Test ${{ matrix.testSet.name }} on ${{ matrix.testSet.host }}
     strategy:
@@ -71,7 +71,7 @@ jobs:
                   - account : NMMM0012
                   - queue   : main
             actions :
-              - make-gnu
+              - build_cmake_arw_em_real_gnu_release_dm
     # I am leaving this here for posterity if this is to be replicated in private repositories for testing
     permissions:
       contents: read
