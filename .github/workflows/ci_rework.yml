@@ -62,8 +62,8 @@ jobs:
       matrix:
         workflow  :
           - host : derecho
-            name : "Make Compilation Tests"
-            id   : make-tests
+            name : "CMake Compilation Tests"
+            id   : cmake-tests
             label: compile-tests
             args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
             patch : 
