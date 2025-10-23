@@ -4,7 +4,7 @@ inputs:
   archive :
     required : false
     type     : string
-    default  : "./"
+    default  : './'
 
   id:
     required : true
@@ -12,23 +12,23 @@ inputs:
   host:
     required : true
     type     : string
-    default  : ""
+    default  : ''
   actions:
     required : false
     type     : string
-    default  : ""
+    default  : ''
   actions_filter:
     required : false
     type     : string
-    default  : ""
+    default  : ''
   args     :
     required : false
     type     : string
-    default  : ""
+    default  : ''
   patch:
     required : false
     type     : string
-    default  : ""
+    default  : ''
 
   cache:
     required : false
@@ -37,7 +37,7 @@ inputs:
   cache_id:
     required : false
     type     : string
-    default  : ""
+    default  : ''
   venv:
     required : false
     type     : string
@@ -48,7 +48,7 @@ inputs:
   python_dependencies:
     required : false
     type     : string
-    default  : ""
+    default  : ''
 
 runs:
   using: "composite"
@@ -76,7 +76,7 @@ runs:
       python3 -m pip install sane-workflows
 
       if [ ! -z "${{ inputs.python_dependencies }}" ]; then
-        python3 -m pip install ${{ inputs.python_dependencies == "" || join( fromJson( inputs.python_dependencies ), ' ' ) }}
+        python3 -m pip install ${{ join( fromJson( inputs.python_dependencies ), ' ' ) }}
       fi
 
   - name: Run ${{ inputs.id }}
@@ -88,7 +88,7 @@ runs:
       if [ ! -z "${{ inputs.action_filter }}" ]; then
         ACTIONS="-f ${{ inputs.action_filter }}"
       elif [ ! -z "${{ inputs.actions }}" ]; then
-        ACTIONS="-a   ${{ inputs.actions == "" || join( fromJson( inputs.actions ), ' ' ) }}"
+        ACTIONS="-a   ${{ join( fromJson( inputs.actions ), ' ' ) }}"
       fi
       if [ ! -z "${{ inputs.host }}" ]; then
         HOST="-sh ${{ inputs.host }}"
