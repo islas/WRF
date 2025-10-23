@@ -52,7 +52,7 @@ on:
 #   - < next test >
 # https://stackoverflow.com/a/68940067
 jobs:
-  buildcmake:
+  compile-tests:
     if : ${{ contains( fromJson('["compile-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
     name : Test ${{ matrix.workflow.name }} on ${{ matrix.workflow.host }}
     runs-on: ${{ matrix.workflow.host }}
@@ -64,7 +64,7 @@ jobs:
           - host : derecho
             name : "Make Compilation Tests"
             id   : make-tests
-            label: buildcmake
+            label: compile-tests
             args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
             patch : 
               priority : -99
@@ -97,8 +97,8 @@ jobs:
               repo:       context.repo.repo,
               sha:        '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
               target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
-              description: '${{ inputs.name }}',
-              context:     '${{ inputs.host }}/${{ inputs.id }}',
+              description: '${{ matrix.workflow.name }}',
+              context:     '${{ matrix.workflow.host }}/${{ matrix.workflow.id }}',
               state:      'pending'
             })
 
