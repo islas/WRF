@@ -106,7 +106,7 @@ jobs:
           ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
 
       - uses: ./.github/actions/sane_workflows
-        name: ${{ inputs.name }}
+        name: ${{ matrix.workflow.name }}
         with:
           # Everything below this should remain the same and comes from the workflow matrix
           id       : ${{ matrix.workflow.id }}

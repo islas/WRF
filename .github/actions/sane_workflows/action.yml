@@ -45,6 +45,7 @@ runs:
   - if: ${{ inputs.cache == 'false' || steps.cache-.outputs.cache-hit != 'true' }}
     name: Install sane-workflows
     id  : install-sane
+    shell: bash
     run: |
       if [ -x "${{ inputs.venv }}/bin/activate" ]; then
         . ${{ inputs.venv }}/bin/activate
@@ -60,6 +61,7 @@ runs:
 
   - name: Run ${{ inputs.id }}
     id  : runTest
+    shell: bash
     run: |
       NAME=${{ inputs.run_id }}-${{ inputs.id }}
 
@@ -77,7 +79,7 @@ runs:
         PATCH="-p .patch-${{ inputs.id }}/"
       fi
 
-      sane_runner ${{ input.args }} $ACTIONS $HOST $PATCH \
+      sane_runner ${{ inputs.args }} $ACTIONS $HOST $PATCH \
         -p ${{ join( fromJson( inputs.paths ), '-p ' ) }} \
         -sl .${NAME}_saves \
         -ll  ${NAME}_logs
