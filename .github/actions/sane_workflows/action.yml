@@ -16,7 +16,7 @@ inputs:
   actions:
     required : false
     type     : string
-    default  : ''
+    default  : '[]'
   actions_filter:
     required : false
     type     : string
@@ -48,7 +48,7 @@ inputs:
   python_dependencies:
     required : false
     type     : string
-    default  : ''
+    default  : '[]'
 
 runs:
   using: "composite"
