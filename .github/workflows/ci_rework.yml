@@ -64,6 +64,7 @@ jobs:
           - host : derecho
             name : "Make Compilation Tests"
             id   : make-tests
+            label: buildcmake
             args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
             patch : 
               - priority : -99
@@ -99,7 +100,7 @@ jobs:
               state:      'pending'
             })
 
-      - uses: ./.github/actions/sane-workflows
+      - uses: ./.github/actions/sane_workflows
         name: ${{ inputs.name }}
         with:
           # Everything below this should remain the same and comes from the workflow matrix
@@ -121,13 +122,13 @@ jobs:
               repo:         context.repo.repo,
               sha:          '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
               target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
-              description:  '${{ inputs.name }}',
-              context:      '${{ inputs.host }}/${{ inputs.id }}',
+              description:  '${{ matrix.workflow.name }}',
+              context:      '${{ matrix.workflow.host }}/${{ matrix.workflow.id }}',
               state:        '${{ job.status == 'success' && 'success' || 'failure' }}'
             })
 
-      - name : Remove '${{ inputs.label }}' label
-        if : ${{ !cancelled() && inputs.event_label == inputs.label }}
+      - name : Remove '${{ matrix.workflow.label }}' label
+        if : ${{ !cancelled() && inputs.event_label == matrix.workflow.label }}
         env:
           PR_NUMBER: ${{ inputs.event_number }}
         run: |
@@ -135,7 +136,7 @@ jobs:
             -X DELETE \
             -H "Accept: application/vnd.github.v3+json" \
             -H 'Authorization: token ${{ github.token }}' \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ inputs.label }}
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ matrix.workflow.label }}
 
   # In the event that 'all-tests' is used, this final job will be the one to remove
   # the label from the PR
