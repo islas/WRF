@@ -78,10 +78,10 @@ runs:
         . ${{ inputs.venv }}/bin/activate
       fi
 
-      python3 -m pip install sane-workflows ${{ inputs.upgrade && '--upgrade' }}
+      python3 -m pip install --no-cache-dir ${{ inputs.upgrade && '--upgrade' }} sane-workflows
 
       if [ "${{ inputs.python_dependencies }}" != "[]" ]; then
-        python3 -m pip install ${{ join( fromJson( inputs.python_dependencies ), ' ' ) }} ${{ inputs.upgrade && '--upgrade' }}
+        python3 -m pip install --no-cache-dir ${{ inputs.upgrade && '--upgrade' }} ${{ join( fromJson( inputs.python_dependencies ), ' ' ) }}
       fi
 
   - name: Run ${{ inputs.id }}
