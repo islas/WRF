@@ -53,7 +53,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-  - if: ${{ inputs.cache }}
+  - if: ${{ inputs.cache == 'true' }}
     name: Cache python environment
     id: cache-venv
     uses: actions/cache@v3
@@ -62,7 +62,7 @@ runs:
         ${{ inputs.venv }}
       key: venv-${{ inputs.cache_id || inputs.id }}
 
-  - if: ${{ inputs.cache == 'false' || steps.cache-.outputs.cache-hit != 'true' }}
+  - if: ${{ inputs.cache == 'false' || steps.cache-venv.outputs.cache-hit != 'true' }}
     name: Install sane-workflows
     id  : install-sane
     shell: bash
@@ -103,7 +103,8 @@ runs:
       sane_runner ${{ inputs.args }} $ACTIONS $HOST $PATCH \
         -p ${{ join( fromJson( inputs.paths ), '-p ' ) }} \
         -sl .${NAME}_saves \
-        -ll  ${NAME}_logs
+        -ll  ${NAME}_logs  \
+        -d
 
   - if  : ${{ inputs.upload && failure() }}
     name: Upload test logs
