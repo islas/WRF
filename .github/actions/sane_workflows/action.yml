@@ -75,7 +75,7 @@ runs:
       fi
       python3 -m pip install sane-workflows
 
-      if [ ! -z "${{ inputs.python_dependencies }}" ]; then
+      if [ "${{ inputs.python_dependencies }}" != "[]" ]; then
         python3 -m pip install ${{ join( fromJson( inputs.python_dependencies ), ' ' ) }}
       fi
 
@@ -87,7 +87,7 @@ runs:
 
       if [ ! -z "${{ inputs.action_filter }}" ]; then
         ACTIONS="-f ${{ inputs.action_filter }}"
-      elif [ ! -z "${{ inputs.actions }}" ]; then
+      elif [ "${{ inputs.actions }}" != "[]" ]; then
         ACTIONS="-a   ${{ join( fromJson( inputs.actions ), ' ' ) }}"
       fi
       if [ ! -z "${{ inputs.host }}" ]; then
