@@ -49,6 +49,10 @@ inputs:
     required : false
     type     : string
     default  : '[]'
+  upgrade:   :
+    required : false
+    type     : boolean
+    default  : true
 
 runs:
   using: "composite"
@@ -73,10 +77,11 @@ runs:
         python3 -m venv ${{ inputs.venv }}
         . ${{ inputs.venv }}/bin/activate
       fi
-      python3 -m pip install sane-workflows
+
+      python3 -m pip install sane-workflows ${{ inputs.upgrade && '--upgrade' }}
 
       if [ "${{ inputs.python_dependencies }}" != "[]" ]; then
-        python3 -m pip install ${{ join( fromJson( inputs.python_dependencies ), ' ' ) }}
+        python3 -m pip install ${{ join( fromJson( inputs.python_dependencies ), ' ' ) }} ${{ inputs.upgrade && '--upgrade' }}
       fi
 
   - name: Run ${{ inputs.id }}
