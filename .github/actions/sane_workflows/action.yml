@@ -30,6 +30,26 @@ inputs:
     type     : string
     default  : ""
 
+  cache:
+    required : false
+    type     : boolean
+    default  : false
+  cache_id:
+    required : false
+    type     : string
+    default  : ""
+  venv:
+    required : false
+    type     : string
+    default  : "./venv/sane"
+  paths:
+    required : true
+    type     : string
+  python_dependencies:
+    required : false
+    type     : string
+    default  : ""
+
 runs:
   using: "composite"
   steps:
@@ -63,7 +83,7 @@ runs:
     id  : runTest
     shell: bash
     run: |
-      NAME=${{ inputs.run_id }}-${{ inputs.id }}
+      NAME=${{ github.run_id }}-${{ inputs.id }}
 
       if [ ! -z "${{ inputs.action_filter }}" ]; then
         ACTIONS="-f ${{ inputs.action_filter }}"
@@ -78,6 +98,7 @@ runs:
         echo '{ "patch" : ${{ inputs.patch }} }' >> .patch-${{ inputs.id }}/patch.json
         PATCH="-p .patch-${{ inputs.id }}/"
       fi
+      . ${{ inputs.venv }}/bin/activate
 
       sane_runner ${{ inputs.args }} $ACTIONS $HOST $PATCH \
         -p ${{ join( fromJson( inputs.paths ), '-p ' ) }} \
@@ -88,6 +109,6 @@ runs:
     name: Upload test logs
     uses : actions/upload-artifact@v4
     with:
-      name: ${{ inputs.run_id }}-${{ inputs.id }}_logfiles
-      path: ${{ inputs.run_id }}-${{ inputs.id }}_logs
+      name: ${{ github.run_id }}-${{ inputs.id }}_logfiles
+      path: ${{ github.run_id }}-${{ inputs.id }}_logs
       include-hidden-files: true
