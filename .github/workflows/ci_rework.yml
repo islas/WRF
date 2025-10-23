@@ -54,7 +54,7 @@ on:
 jobs:
   compile-tests:
     if : ${{ contains( fromJson('["compile-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
-    name : Test ${{ matrix.workflow.name }} on ${{ matrix.workflow.host }}
+    name : Run ${{ matrix.workflow.name }} on ${{ matrix.workflow.host }}
     runs-on: ${{ matrix.workflow.host }}
     strategy:
       max-parallel: 4
@@ -72,7 +72,7 @@ jobs:
                 '[.*derecho.*]' :
                   account   : NMMM0012
                   queue     : main
-                  job_suffix: -${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}
+                  job_suffix: .compile-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}
             actions :
               - build_cmake_arw_em_real_gnu_release_dm
               - build_cmake_arw_em_real_gnu_debug_dm
@@ -118,6 +118,7 @@ jobs:
           args     : ${{ matrix.workflow.args }}
           patch    : '${{ toJson( matrix.workflow.patch ) }}'
           paths    : '${{ toJson( matrix.workflow.paths ) }}'
+          upload   : true
 
       - name: Set completed status
         if: ${{ always() }}

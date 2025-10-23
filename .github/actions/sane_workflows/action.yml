@@ -88,8 +88,6 @@ runs:
     id  : runTest
     shell: bash
     run: |
-      NAME=${{ github.run_id }}-${{ inputs.id }}
-
       if [ ! -z "${{ inputs.action_filter }}" ]; then
         ACTIONS="-f ${{ inputs.action_filter }}"
       elif [ "${{ inputs.actions }}" != "[]" ]; then
@@ -107,14 +105,14 @@ runs:
 
       sane_runner ${{ inputs.args }} $ACTIONS $HOST $PATCH \
         -p ${{ join( fromJson( inputs.paths ), '-p ' ) }} \
-        -sl .${NAME}_saves \
-        -ll  ${NAME}_logs  \
+        -sl .${{ inputs.id }}_saves \
+        -ll  ${{ inputs.id }}_logs  \
         -r
 
   - if  : ${{ inputs.upload && failure() }}
     name: Upload test logs
     uses : actions/upload-artifact@v4
     with:
-      name: ${{ github.run_id }}-${{ inputs.id }}_logfiles
-      path: ${{ github.run_id }}-${{ inputs.id }}_logs
+      name: ${{ inputs.id }}_logfiles
+      path: ${{ inputs.id }}_logs
       include-hidden-files: true
