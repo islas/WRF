@@ -112,7 +112,6 @@ jobs:
           id       : ${{ matrix.workflow.id }}
           host     : ${{ matrix.workflow.host }}
           actions  : ${{ toJson( matrix.workflow.actions ) }}
-          mkdirs   : ${{ matrix.workflow.mkdirs }}
           args     : ${{ matrix.workflow.args }}
           patch    : '${{ toJson( matrix.workflow.patch ) }}'
 
