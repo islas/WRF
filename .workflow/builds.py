@@ -15,7 +15,7 @@ def add_build_for_envs( orch ):
       dm_desc = "_dm" if dm == "ON" else ""
       id = f"{core}_{case}_{env}_{build_type}{sm_desc}{dm_desc}".lower()
 
-      action = sane.Action( f"build_{id}" )
+      action = sane.Action( f"build_cmake_{id}" )
       action.config["command"]   = ".workflow/scripts/buildCMake.sh"
       args = []
 
