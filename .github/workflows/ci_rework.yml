@@ -100,6 +100,11 @@ jobs:
               state:      'pending'
             })
 
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
+
       - uses: ./.github/actions/sane_workflows
         name: ${{ inputs.name }}
         with:
