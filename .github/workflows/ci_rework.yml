@@ -66,26 +66,26 @@ jobs:
       name     : "CMake Compilation Tests"
       host     : derecho
       paths : |
-        [ './workflow' ]
+        [ "./workflow" ]
       args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
       patch: |
         {
-          'priority':-99,
-          'hosts':
+          "priority" : -99,
+          "hosts" :
           {
-            '[.*derecho.*]' :
+            "[.*derecho.*]" :
             {
-              'account' : 'NMMM0012',
-              'queue'   : 'main',
-              'job_suffix' : 'cmake-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}'
+              "account" : "NMMM0012",
+              "queue"   : "main",
+              "job_suffix" : "cmake-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
             }
           }
         }
       actions : |
-        [ 'build_cmake_arw_em_real_gnu_release_dm',
-          'build_cmake_arw_em_real_gnu_release',
-          'build_cmake_arw_em_real_gnu_debug_dm',
-          'build_cmake_arw_em_em_b_wave_gnu_debug'
+        [ "build_cmake_arw_em_real_gnu_release_dm",
+          "build_cmake_arw_em_real_gnu_release",
+          "build_cmake_arw_em_real_gnu_debug_dm",
+          "build_cmake_arw_em_em_b_wave_gnu_debug"
           ]
 
       # required to do event trigger
