@@ -54,11 +54,18 @@ on:
 jobs:
   compile-tests:
     if : ${{ contains( fromJson('["compile-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
-    env:
-      host: derecho
-      label: cmake-tests
-      name: "CMake Compilation Tests"
+    # I am leaving this here for posterity if this is to be replicated in private repositories for testing
+    permissions:
+      contents: read
+      pull-requests: write
+      statuses: write
+    uses : ./.github/workflows/labeled_test.yml
+    with :
+      label    : cmake-compile-tests
+      name     : "CMake Compilation Tests"
+      host     : derecho
       paths: '[ ./workflow ]'
+      args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
       patch: |
         {
           'priority':-99,
@@ -72,82 +79,19 @@ jobs:
             }
           }
         }
-      args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
       actions : |
         [ build_cmake_arw_em_real_gnu_release_dm,
           build_cmake_arw_em_real_gnu_release,
           build_cmake_arw_em_real_gnu_debug_dm,
           build_cmake_arw_em_em_b_wave_gnu_debug
           ]
-    name : Run ${{ env.name }} on ${{ env.host }}
-    runs-on: ${{ env.host }}
-    # I am leaving this here for posterity if this is to be replicated in private repositories for testing
-    permissions:
-      contents: read
-      pull-requests: write
-      statuses: write
-    steps:
-      # Don't use gh checks as they are woefully underdeveloped as a feature leading
-      # to confusing UI and misplaced metrics
-      # https://github.com/orgs/community/discussions/24616
-      - name: Set pending status
-        id: check_run_start
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.repos.createCommitStatus({
-              owner:      context.repo.owner,
-              repo:       context.repo.repo,
-              sha:        '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
-              target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
-              description: '${{ env.name }}',
-              context:     '${{ env.host }}/${{ env.label }}',
-              state:      'pending'
-            })
 
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-          ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
-
-      - uses: islas/sane-workflows-action@v1.0.0
-        name: ${{ env.name }}
-        with:
-          id       : ${{ env.label }}
-          host     : ${{ env.host }}
-          actions  : ${{ env.actions }}
-          args     : ${{ env.args }}
-          patch    : ${{ env.patch }}
-          paths    : ${{ env.paths ) }}
-          upload   : true
-
-      - name: Set completed status
-        if: ${{ always() }}
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.repos.createCommitStatus({
-              owner:        context.repo.owner,
-              repo:         context.repo.repo,
-              sha:          '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
-              target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
-              description:  '${{ env.name }}',
-              context:      '${{ env.host }}/${{ env.label }}',
-              state:        '${{ job.status == 'success' && 'success' || 'failure' }}'
-            })
-
-      - name : Remove '${{ env.label }}' label
-        if : ${{ !cancelled() && inputs.event_label == env.label }}
-        env:
-          PR_NUMBER: ${{ inputs.event_number }}
-        run: |
-          curl \
-            -X DELETE \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H 'Authorization: token ${{ github.token }}' \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ env.label }}
+      # required to do event trigger
+      event_name   : ${{ inputs.event_name }}
+      event_number : ${{ inputs.event_number }}
+      event_label  : ${{ inputs.test }}
+      ref          : ${{ inputs.ref }}
+      sha          : ${{ inputs.sha }}
 
   # In the event that 'all-tests' is used, this final job will be the one to remove
   # the label from the PR
