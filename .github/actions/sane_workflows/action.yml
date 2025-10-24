@@ -1,54 +1,67 @@
 name: sane-workflows
 description: "Run a set of actions using sane-workflows"
 inputs:
-  upload :
-    required : false
-    type     : boolean
-    default  : false
-
   id:
+    description: ID of workflow run, i.e. name
     required : true
     type     : string
-  host:
+  paths:
+    description: List of paths pointing to workflow(s)
     required : true
+    type     : array
+
+  # Everything else is optional
+  host:
+    description: Specific host to run workflow as
+    required : false
     type     : string
     default  : ''
   actions:
+    description: Actions list to run, mutually exclusive with actions_filter
     required : false
-    type     : string
-    default  : '[]'
+    type     : array
+    default  : []
   actions_filter:
+    description: Actions filter to run, mutually exclusive with actions
     required : false
     type     : string
     default  : ''
   args     :
+    description: Additional args to pass to sane_runner
     required : false
     type     : string
     default  : ''
   patch:
+    description: One-time patch allowed for modification of workflow, need be
     required : false
-    type     : string
-    default  : ''
+    type     : object
+    default  : {}
+  upload :
+    description: Whether to upload logs as an artifact on failure
+    required : false
+    type     : boolean
+    default  : false
 
+  # Python environment management
   cache:
+    description: Whether to cache the python virtual environment
     required : false
     type     : boolean
     default  : false
   cache_id:
+    description: Specific cache id to use, if not set the key will be ${{ inputs.id }}
     required : false
     type     : string
     default  : ''
   venv:
+    description: Path to setup python virtual environment at
     required : false
     type     : string
-    default  : "./venv/sane"
-  paths:
-    required : true
-    type     : string
+    default  : './venv/sane'
   python_dependencies:
     required : false
-    type     : string
-    default  : '[]'
+    type     : array
+    default  : []
   upgrade:
     required : false
     type     : boolean
@@ -81,7 +94,7 @@ runs:
       python3 -m pip install --no-cache-dir ${{ inputs.upgrade && '--upgrade' }} sane-workflows
 
       if [ "${{ inputs.python_dependencies }}" != "[]" ]; then
-        python3 -m pip install --no-cache-dir ${{ inputs.upgrade && '--upgrade' }} ${{ join( fromJson( inputs.python_dependencies ), ' ' ) }}
+        python3 -m pip install --no-cache-dir ${{ inputs.upgrade && '--upgrade' }} ${{ join( inputs.python_dependencies, ' ' ) }}
       fi
 
   - name: Run ${{ inputs.id }}
@@ -91,14 +104,14 @@ runs:
       if [ ! -z "${{ inputs.action_filter }}" ]; then
         ACTIONS="-f ${{ inputs.action_filter }}"
       elif [ "${{ inputs.actions }}" != "[]" ]; then
-        ACTIONS="-a ${{ join( fromJson( inputs.actions ), ' ' ) }}"
+        ACTIONS="-a ${{ join( inputs.actions, ' ' ) }}"
       fi
       if [ ! -z "${{ inputs.host }}" ]; then
         HOST="-sh ${{ inputs.host }}"
       fi
       if [ ! -z "${{ inputs.patch }}" ]; then
         mkdir -p .patch-${{ inputs.id }}/
-        echo '{ "patches" : ${{ inputs.patch }} }' >> .patch-${{ inputs.id }}/patch.json
+        echo '{ "patches" : toJSON( ${{ inputs.patch }} ) }' >> .patch-${{ inputs.id }}/patch.json
         PATCH="-p .patch-${{ inputs.id }}/"
       fi
       . ${{ inputs.venv }}/bin/activate
@@ -107,7 +120,7 @@ runs:
         -p ${{ join( fromJson( inputs.paths ), '-p ' ) }} \
         -sl .${{ inputs.id }}_saves \
         -ll  ${{ inputs.id }}_logs  \
-        -r
+        -d
 
   - if  : ${{ inputs.upload && failure() }}
     name: Upload test logs

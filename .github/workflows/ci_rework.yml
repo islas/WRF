@@ -114,10 +114,10 @@ jobs:
           # Everything below this should remain the same and comes from the workflow matrix
           id       : ${{ matrix.workflow.id }}
           host     : ${{ matrix.workflow.host }}
-          actions  : ${{ toJson( matrix.workflow.actions ) }}
+          actions  : ${{ matrix.workflow.actions }} #${{ toJson( matrix.workflow.actions ) }}
           args     : ${{ matrix.workflow.args }}
-          patch    : '${{ toJson( matrix.workflow.patch ) }}'
-          paths    : '${{ toJson( matrix.workflow.paths ) }}'
+          patch    : ${{ matrix.workflow.patch }} #'${{ toJson( matrix.workflow.patch ) }}'
+          paths    : ${{ matrix.workflow.paths }} #'${{ toJson( matrix.workflow.paths ) }}'
           upload   : true
 
       - name: Set completed status
