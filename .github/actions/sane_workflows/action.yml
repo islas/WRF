@@ -19,7 +19,8 @@ inputs:
   actions:
     description: Actions list to run, mutually exclusive with actions_filter
     required : false
-    type     : array
+    type     : string
+    default  : '[]'
   actions_filter:
     description: Actions filter to run, mutually exclusive with actions
     required : false
@@ -31,9 +32,10 @@ inputs:
     type     : string
     default  : ''
   patch:
-    description: One-time patch allowed for modification of workflow, need be
+    description: One-time patch dict allowed for modification of workflow, need be
     required : false
-    type     : object
+    type     : string
+    default  : ''
   upload :
     description: Whether to upload logs as an artifact on failure
     required : false
@@ -57,9 +59,12 @@ inputs:
     type     : string
     default  : './venv/sane'
   python_dependencies:
+    description: Extra python dependencies needed for workflow
     required : false
     type     : array
+    default  : '[]'
   upgrade:
+    description: Use pip install --upgrade when installing dependencies, not recommended with cache
     required : false
     type     : boolean
     default  : true
@@ -91,7 +96,7 @@ runs:
       python3 -m pip install --no-cache-dir ${{ inputs.upgrade && '--upgrade' }} sane-workflows
 
       if [ "${{ inputs.python_dependencies }}" != "[]" ]; then
-        python3 -m pip install --no-cache-dir ${{ inputs.upgrade && '--upgrade' }} ${{ join( inputs.python_dependencies, ' ' ) }}
+        python3 -m pip install --no-cache-dir ${{ inputs.upgrade && '--upgrade' }} ${{ join( fromJson( inputs.python_dependencies ), ' ' ) }}
       fi
 
   - name: Run ${{ inputs.id }}
@@ -101,14 +106,14 @@ runs:
       if [ ! -z "${{ inputs.action_filter }}" ]; then
         ACTIONS="-f ${{ inputs.action_filter }}"
       elif [ "${{ inputs.actions }}" != "[]" ]; then
-        ACTIONS="-a ${{ join( inputs.actions, ' ' ) }}"
+        ACTIONS="-a ${{ join( fromJson( inputs.actions ), ' ' ) }}"
       fi
       if [ ! -z "${{ inputs.host }}" ]; then
         HOST="-sh ${{ inputs.host }}"
       fi
       if [ ! -z "${{ inputs.patch }}" ]; then
         mkdir -p .patch-${{ inputs.id }}/
-        echo '{ "patches" : toJSON( ${{ inputs.patch }} ) }' >> .patch-${{ inputs.id }}/patch.json
+        echo '{ "patches" : ${{ inputs.patch }} }' >> .patch-${{ inputs.id }}/patch.json
         PATCH="-p .patch-${{ inputs.id }}/"
       fi
       . ${{ inputs.venv }}/bin/activate
