@@ -54,42 +54,33 @@ on:
 jobs:
   compile-tests:
     if : ${{ contains( fromJson('["compile-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
-    name : Run ${{ matrix.workflow.name }} on ${{ matrix.workflow.host }}
-    runs-on: ${{ matrix.workflow.host }}
-    strategy:
-      max-parallel: 4
-      fail-fast: false
-      matrix:
-        base  :
-          - host : derecho
-            label: compile-tests
-            paths:
-              - .workflow/
-            patch : 
-              priority : -99
-              hosts :
-                '[.*derecho.*]' :
-                  account   : NMMM0012
-                  queue     : main
-                  job_suffix: .{0}.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}
-        workflow:
-          - name : "CMake GNU Compilation Tests"
-            id   : cmake-gnu
-            args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
-            actions :
-              - build_cmake_arw_em_real_gnu_release_dm
-              - build_cmake_arw_em_real_gnu_release
-              - build_cmake_arw_em_real_gnu_debug_dm
-              - build_cmake_arw_em_em_b_wave_gnu_debug
-          - name: "CMake Intel Compilation Tests"
-            id  : cmake-intel
-            args : -vr='{"cpus":128,"timelimit":"00:35:00"}'
-            actions:
-              - build_cmake_arw_em_real_intel_release_dm
-              - build_cmake_arw_em_real_intel_release
-              - build_cmake_arw_em_real_intel_debug_dm
-              - build_cmake_arw_em_b_wave_intel_debug
-
+    env:
+      host: derecho
+      label: cmake-tests
+      name: "CMake Compilation Tests"
+      paths: '[ ./workflow ]'
+      patch: |
+        {
+          'priority':-99,
+          'hosts':
+          {
+            '[.*derecho.*]' :
+            {
+              'account' : 'NMMM0012',
+              'queue'   : 'main',
+              'job_suffix' : 'cmake-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}'
+            }
+          }
+        }
+      args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
+      actions : |
+        [ build_cmake_arw_em_real_gnu_release_dm,
+          build_cmake_arw_em_real_gnu_release,
+          build_cmake_arw_em_real_gnu_debug_dm,
+          build_cmake_arw_em_em_b_wave_gnu_debug
+          ]
+    name : Run ${{ env.name }} on ${{ env.host }}
+    runs-on: ${{ env.host }}
     # I am leaving this here for posterity if this is to be replicated in private repositories for testing
     permissions:
       contents: read
@@ -110,8 +101,8 @@ jobs:
               repo:       context.repo.repo,
               sha:        '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
               target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
-              description: '${{ matrix.workflow.name }}',
-              context:     '${{ matrix.base.host }}/${{ matrix.workflow.id }}',
+              description: '${{ env.name }}',
+              context:     '${{ env.host }}/${{ env.label }}',
               state:      'pending'
             })
 
@@ -121,15 +112,14 @@ jobs:
           ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
 
       - uses: islas/sane-workflows-action@v1.0.0
-        name: ${{ matrix.workflow.name }}
+        name: ${{ env.name }}
         with:
-          # Everything below this should remain the same and comes from the workflow matrix
-          id       : ${{ matrix.workflow.id }}
-          host     : ${{ matrix.base.host }}
-          actions  : '${{ toJson( matrix.workflow.actions ) }}'
-          args     : ${{ matrix.workflow.args }}
-          patch    : '${{ format( toJson( matrix.base.patch ), matrix.workflow.id }}'
-          paths    : '${{ toJson( matrix.base.paths ) }}'
+          id       : ${{ env.label }}
+          host     : ${{ env.host }}
+          actions  : ${{ env.actions }}
+          args     : ${{ env.args }}
+          patch    : ${{ env.patch }}
+          paths    : ${{ env.paths ) }}
           upload   : true
 
       - name: Set completed status
@@ -143,13 +133,13 @@ jobs:
               repo:         context.repo.repo,
               sha:          '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
               target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
-              description:  '${{ matrix.workflow.name }}',
-              context:      '${{ matrix.base.host }}/${{ matrix.workflow.id }}',
+              description:  '${{ env.name }}',
+              context:      '${{ env.host }}/${{ env.label }}',
               state:        '${{ job.status == 'success' && 'success' || 'failure' }}'
             })
 
-      - name : Remove '${{ matrix.base.label }}' label
-        if : ${{ !cancelled() && inputs.event_label == matrix.base.label }}
+      - name : Remove '${{ env.label }}' label
+        if : ${{ !cancelled() && inputs.event_label == env.label }}
         env:
           PR_NUMBER: ${{ inputs.event_number }}
         run: |
@@ -157,7 +147,7 @@ jobs:
             -X DELETE \
             -H "Accept: application/vnd.github.v3+json" \
             -H 'Authorization: token ${{ github.token }}' \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ matrix.base.label }}
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ env.label }}
 
   # In the event that 'all-tests' is used, this final job will be the one to remove
   # the label from the PR
