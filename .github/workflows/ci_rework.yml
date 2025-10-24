@@ -66,7 +66,7 @@ jobs:
       name     : "CMake Compilation Tests"
       host     : derecho
       paths : |
-        [ "./workflow" ]
+        [ ".workflow/" ]
       args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
       patch: |
         {
