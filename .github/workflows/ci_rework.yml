@@ -60,6 +60,7 @@ jobs:
       pull-requests: write
       statuses: write
     uses : ./.github/workflows/labeled_test.yml
+    name : CMake Compilation Tests
     with :
       label    : cmake-compile-tests
       name     : "CMake Compilation Tests"
