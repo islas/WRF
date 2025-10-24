@@ -85,7 +85,7 @@ jobs:
         [ "build_cmake_arw_em_real_gnu_release_dm",
           "build_cmake_arw_em_real_gnu_release",
           "build_cmake_arw_em_real_gnu_debug_dm",
-          "build_cmake_arw_em_em_b_wave_gnu_debug"
+          "build_cmake_arw_em_b_wave_gnu_debug"
           ]
 
       # required to do event trigger
