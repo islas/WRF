@@ -47,7 +47,7 @@ inputs:
     type     : boolean
     default  : false
   cache_id:
-    description: Specific cache id to use, if not set the key will be ${{ inputs.id }}
+    description: Specific cache id to use, if not set the key will be inputs.id
     required : false
     type     : string
     default  : ''
