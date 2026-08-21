@@ -1,0 +1,147 @@
+on :
+  workflow_call :
+    inputs :
+      # Label control
+      label : 
+        required : true
+        type     : string
+      name     :
+        required : true
+        type     : string
+      event_name :
+        required : true
+        type     : string
+      event_number: 
+        required : true
+        type     : string
+      event_label: 
+        required : true
+        type     : string
+      ref        :
+        required : true
+        type     : string
+      sha        :
+        required : true
+        type     : string
+
+      # SANE Workflow
+      paths:
+        required : true
+        type     : string
+      host:
+        required : false
+        type     : string
+      actions:
+        required : false
+        type     : string
+        default  : '[]'
+      actions_filter:
+        required : false
+        type     : string
+      args     :
+        required : false
+        type     : string
+      patch:
+        required : false
+        type     : string
+      upload :
+        required : false
+        type     : boolean
+      cache:
+        required : false
+        type     : boolean
+      cache_id:
+        required : false
+        type     : string
+      venv:
+        required : false
+        type     : string
+        default  : './venv/sane'
+      python_dependencies:
+        required : false
+        type     : string
+        default  : '[]'
+      upgrade:
+        required : false
+        type     : boolean
+        default  : true
+
+jobs:
+  labeled_test:
+    # Is 5 days a reasonable wait time for testing?
+    timeout-minutes: 7200
+    name: Run ${{ inputs.name }} on ${{ inputs.host }}
+    runs-on: ${{ inputs.host }}
+    steps:
+    # Don't use gh checks as they are woefully underdeveloped as a feature leading
+    # to confusing UI and misplaced metrics
+    # https://github.com/orgs/community/discussions/24616
+    - name: Set pending status
+      id: check_run_start
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.rest.repos.createCommitStatus({
+            owner:      context.repo.owner,
+            repo:       context.repo.repo,
+            sha:        '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
+            target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+            description: '${{ inputs.name }}',
+            context:     '${{ inputs.host }}/${{ inputs.label }}',
+            state:      'pending'
+          })
+
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
+
+    - uses: islas/sane-workflows-action@v1.0.0
+      name: ${{ inputs.name }}
+      with:
+        id       : ${{ inputs.label }}
+        paths    : ${{ inputs.paths }}
+        host     : ${{ inputs.host }}
+        actions  : ${{ inputs.actions }}
+        actions_filter : ${{ inputs.actions_filter }}
+        args     : ${{ inputs.args }}
+        patch    : ${{ inputs.patch }}
+        upload   : ${{ inputs.upload }}
+        cache    : ${{ inputs.cache }}
+        cache_id : ${{ inputs.cache_id }}
+        venv     : ${{ inputs.venv }}
+        python_dependencies : ${{ inputs.python_dependencies }}
+        upgrade   : ${{ inputs.upgrade }}
+
+    - name: Set completed status
+      if: ${{ always() }}
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.rest.repos.createCommitStatus({
+            owner:        context.repo.owner,
+            repo:         context.repo.repo,
+            sha:          '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
+            target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+            description:  '${{ inputs.name }}',
+            context:      '${{ inputs.host }}/${{ inputs.label }}',
+            state:        '${{ job.status == 'success' && 'success' || 'failure' }}'
+          })
+
+    - name : Remove '${{ inputs.label }}' label
+      if : ${{ !cancelled() && inputs.event_label == inputs.label }}
+      env:
+        PR_NUMBER: ${{ inputs.event_number }}
+      run: |
+        curl \
+          -X DELETE \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H 'Authorization: token ${{ github.token }}' \
+          https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ inputs.label }}
+    
+
+
+  
+

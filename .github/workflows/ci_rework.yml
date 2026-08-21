@@ -52,90 +52,48 @@ on:
 #   - < next test >
 # https://stackoverflow.com/a/68940067
 jobs:
-  buildcmake:
+  compile-tests:
     if : ${{ contains( fromJson('["compile-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
-    name : Test ${{ matrix.workflow.name }} on ${{ matrix.workflow.host }}
-    runs-on: ${{ matrix.workflow.host }}
-    strategy:
-      max-parallel: 4
-      fail-fast: false
-      matrix:
-        workflow  :
-          - host : derecho
-            name : "Make Compilation Tests"
-            id   : make-tests
-            args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
-            patch : 
-              - priority : -99
-              - hosts :
-                - '[.*derecho.*]' :
-                  - account : NMMM0012
-                  - queue   : main
-            actions :
-              - build_cmake_arw_em_real_gnu_release_dm
-              - build_cmake_arw_em_real_gnu_debug_dm
     # I am leaving this here for posterity if this is to be replicated in private repositories for testing
     permissions:
       contents: read
       pull-requests: write
       statuses: write
-    steps:
-      # Don't use gh checks as they are woefully underdeveloped as a feature leading
-      # to confusing UI and misplaced metrics
-      # https://github.com/orgs/community/discussions/24616
-      - name: Set pending status
-        id: check_run_start
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.repos.createCommitStatus({
-              owner:      context.repo.owner,
-              repo:       context.repo.repo,
-              sha:        '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
-              target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
-              description: '${{ inputs.name }}',
-              context:     '${{ inputs.host }}/${{ inputs.id }}',
-              state:      'pending'
-            })
+    uses : ./.github/workflows/labeled_test.yml
+    name : CMake Compilation Tests
+    with :
+      label    : cmake-compile-tests
+      name     : "CMake Compilation Tests"
+      host     : derecho
+      paths : |
+        [ ".workflow/" ]
+      args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
+      patch: |
+        {
+          "priority" : -99,
+          "hosts" :
+          {
+            "[.*derecho.*]" :
+            {
+              "account" : "NMMM0012",
+              "queue"   : "main",
+              "job_suffix" : "cmake-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+            }
+          }
+        }
+      actions : |
+        [ "build_cmake_arw_em_real_gnu_release_dm",
+          "build_cmake_arw_em_real_gnu_release",
+          "build_cmake_arw_em_real_gnu_debug_dm",
+          "build_cmake_arw_em_b_wave_gnu_debug"
+          ]
 
-      - uses: ./.github/actions/sane-workflows
-        name: ${{ inputs.name }}
-        with:
-          # Everything below this should remain the same and comes from the workflow matrix
-          id       : ${{ matrix.workflow.id }}
-          host     : ${{ matrix.workflow.host }}
-          actions  : ${{ toJson( matrix.workflow.actions ) }}
-          mkdirs   : ${{ matrix.workflow.mkdirs }}
-          args     : ${{ matrix.workflow.args }}
-          patch    : '${{ toJson( matrix.workflow.patch ) }}'
-
-      - name: Set completed status
-        if: ${{ always() }}
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.repos.createCommitStatus({
-              owner:        context.repo.owner,
-              repo:         context.repo.repo,
-              sha:          '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
-              target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
-              description:  '${{ inputs.name }}',
-              context:      '${{ inputs.host }}/${{ inputs.id }}',
-              state:        '${{ job.status == 'success' && 'success' || 'failure' }}'
-            })
-
-      - name : Remove '${{ inputs.label }}' label
-        if : ${{ !cancelled() && inputs.event_label == inputs.label }}
-        env:
-          PR_NUMBER: ${{ inputs.event_number }}
-        run: |
-          curl \
-            -X DELETE \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H 'Authorization: token ${{ github.token }}' \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ inputs.label }}
+      # required to do event trigger
+      event_name   : ${{ inputs.event_name }}
+      event_number : ${{ inputs.event_number }}
+      event_label  : ${{ inputs.test }}
+      ref          : ${{ inputs.ref }}
+      sha          : ${{ inputs.sha }}
 
   # In the event that 'all-tests' is used, this final job will be the one to remove
   # the label from the PR
@@ -143,7 +101,7 @@ jobs:
     if : ${{ !cancelled() && inputs.event_label == 'all-tests' }}
     name : Remove 'all-tests' label
     runs-on: ubuntu-latest
-    needs : [ buildcmake ] # Put tests here to make this wait for the tests to complete
+    needs : [ compile-tests ] # Put tests here to make this wait for the tests to complete
     permissions:
       pull-requests: write
     steps: 
