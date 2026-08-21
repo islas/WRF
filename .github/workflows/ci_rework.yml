@@ -52,8 +52,8 @@ on:
 #   - < next test >
 # https://stackoverflow.com/a/68940067
 jobs:
-  compile-tests:
-    if : ${{ contains( fromJson('["compile-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
+  cmake-tests:
+    if : ${{ contains( fromJson('["cmake-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
     # I am leaving this here for posterity if this is to be replicated in private repositories for testing
     permissions:
       contents: read
@@ -62,12 +62,12 @@ jobs:
     uses : ./.github/workflows/labeled_test.yml
     name : CMake Compilation Tests
     with :
-      label    : cmake-compile-tests
+      label    : cmake-tests
       name     : "CMake Compilation Tests"
       host     : derecho
       paths : |
-        [ ".workflow/" ]
-      args : -vr='{"cpus":128,"timelimit":"00:10:00"}'
+        [ ".sane/" ]
+      args : -vr='{"cpus":128,"timelimit":"00:30:00"}'
       patch: |
         {
           "priority" : -99,
@@ -81,17 +81,56 @@ jobs:
             }
           }
         }
-      actions : |
-        [ "build_cmake_arw_em_real_gnu_release_dm",
-          "build_cmake_arw_em_real_gnu_release",
-          "build_cmake_arw_em_real_gnu_debug_dm",
-          "build_cmake_arw_em_b_wave_gnu_debug"
+      filter : |
+        [ "build_cmake_arw_em_real_.*_dm",
+          "build_cmake_arw_em_b_wave_.*_dm"
           ]
 
       # required to do event trigger
       event_name   : ${{ inputs.event_name }}
       event_number : ${{ inputs.event_number }}
-      event_label  : ${{ inputs.test }}
+      event_label  : ${{ inputs.event_label }}
+      ref          : ${{ inputs.ref }}
+      sha          : ${{ inputs.sha }}
+
+  make-tests:
+    if : ${{ contains( fromJson('["make-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
+    # I am leaving this here for posterity if this is to be replicated in private repositories for testing
+    permissions:
+      contents: read
+      pull-requests: write
+      statuses: write
+    uses : ./.github/workflows/labeled_test.yml
+    name : Make Compilation Tests
+    with :
+      label    : make-tests
+      name     : "Make Compilation Tests"
+      host     : derecho
+      paths : |
+        [ ".sane/" ]
+      args : -vr='{"cpus":128,"timelimit":"00:30:00"}'
+      patch: |
+        {
+          "priority" : -99,
+          "hosts" :
+          {
+            "[.*derecho.*]" :
+            {
+              "account" : "NMMM0012",
+              "queue"   : "main",
+              "job_suffix" : "make-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+            }
+          }
+        }
+      actions : |
+        [ "build_make_em_real_.*_dmpar",
+          "build_make_em_b_wave_.*_serial"
+          ]
+
+      # required to do event trigger
+      event_name   : ${{ inputs.event_name }}
+      event_number : ${{ inputs.event_number }}
+      event_label  : ${{ inputs.event_label }}
       ref          : ${{ inputs.ref }}
       sha          : ${{ inputs.sha }}
 
