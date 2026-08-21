@@ -140,7 +140,7 @@ jobs:
     if : ${{ !cancelled() && inputs.event_label == 'all-tests' }}
     name : Remove 'all-tests' label
     runs-on: ubuntu-latest
-    needs : [ compile-tests ] # Put tests here to make this wait for the tests to complete
+    needs : [ cmake-tests, make-tests ] # Put tests here to make this wait for the tests to complete
     permissions:
       pull-requests: write
     steps: 
