@@ -82,10 +82,7 @@ jobs:
             }
           }
         }
-      actions_filter : |
-        [ "build_cmake_arw_em_real_.*_dm",
-          "build_cmake_arw_em_b_wave_.*_dm"
-          ]
+      actions_filter : "build_cmake_arw_(em_real|em_b_wave).*_dm"
 
       # required to do event trigger
       event_name   : ${{ inputs.event_name }}
@@ -123,10 +120,7 @@ jobs:
             }
           }
         }
-      actions_filter : |
-        [ "build_make_em_real_.*_dmpar",
-          "build_make_em_b_wave_.*_serial"
-          ]
+      actions_filter : "build_make_(em_real|em_b_wave).*_dmpar"
 
       # required to do event trigger
       event_name   : ${{ inputs.event_name }}
