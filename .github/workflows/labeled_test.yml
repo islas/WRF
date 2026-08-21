@@ -92,7 +92,7 @@ jobs:
             sha:        '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
             target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
             description: '${{ inputs.name }}',
-            context:     '${{ inputs.host }}/${{ inputs.label }}',
+            context:     'sane_workflows/${{ inputs.host }}/${{ inputs.label }}',
             state:      'pending'
           })
 
@@ -131,7 +131,7 @@ jobs:
             sha:          '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
             target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
             description:  '${{ inputs.name }}',
-            context:      '${{ inputs.host }}/${{ inputs.label }}',
+            context:      'sane_workflows/${{ inputs.host }}/${{ inputs.label }}',
             state:        '${{ job.status == 'success' && 'success' || 'failure' }}'
           })
 
