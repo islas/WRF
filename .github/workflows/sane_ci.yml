@@ -31,7 +31,8 @@ on:
         type: choice
         options:
           - all-tests
-          - compile-tests
+          - cmake-tests
+          - make-tests
 
 
 # https://docs.github.com/en/actions/sharing-automations/reusing-workflows#supported-keywords-for-jobs-that-call-a-reusable-workflow
