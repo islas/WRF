@@ -92,7 +92,7 @@ jobs:
             sha:        '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
             target_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
             description: '${{ inputs.name }}',
-            context:     'sane_workflows/${{ inputs.host }}/${{ inputs.label }}',
+            context:     '${{ inputs.host }}/${{ inputs.label }}',
             state:      'pending'
           })
 
@@ -101,7 +101,7 @@ jobs:
         submodules: true
         ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
 
-    - uses: islas/sane-workflows-action@v1.0.1
+    - uses: islas/sane-workflows-action@v1.0.2
       name: ${{ inputs.name }}
       with:
         id       : ${{ inputs.label }}
@@ -131,7 +131,7 @@ jobs:
             sha:          '${{ inputs.event_name == 'push' && github.sha || inputs.sha }}',
             target_url:   '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
             description:  '${{ inputs.name }}',
-            context:      'sane_workflows/${{ inputs.host }}/${{ inputs.label }}',
+            context:      '${{ inputs.host }}/${{ inputs.label }}',
             state:        '${{ job.status == 'success' && 'success' || 'failure' }}'
           })
 
