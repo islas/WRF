@@ -76,6 +76,8 @@ jobs:
       label    : cmake-tests
       name     : "CMake Compilation Tests"
       host     : derecho
+      dry_run  : true
+
       paths : |
         [ ".sane/" ]
       args : -vr='{"cpus":128,"timelimit":"00:30:00"}'
@@ -92,7 +94,7 @@ jobs:
             }
           }
         }
-      filter : |
+      actions_filter : |
         [ "build_cmake_arw_em_real_.*_dm",
           "build_cmake_arw_em_b_wave_.*_dm"
           ]
@@ -117,6 +119,8 @@ jobs:
       label    : make-tests
       name     : "Make Compilation Tests"
       host     : derecho
+      dry_run  : true
+
       paths : |
         [ ".sane/" ]
       args : -vr='{"cpus":128,"timelimit":"00:30:00"}'
@@ -133,7 +137,7 @@ jobs:
             }
           }
         }
-      actions : |
+      actions_filter : |
         [ "build_make_em_real_.*_dmpar",
           "build_make_em_b_wave_.*_serial"
           ]
