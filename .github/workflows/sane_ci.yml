@@ -85,7 +85,7 @@ jobs:
             "[.*derecho.*]" :
             {
               "account" : "NMMM0012",
-              "job_suffix" : "cmake-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              "job_suffix" : ".cmake-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
             }
           }
         }
@@ -123,7 +123,7 @@ jobs:
             "[.*derecho.*]" :
             {
               "account" : "NMMM0012",
-              "job_suffix" : "make-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              "job_suffix" : ".make-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
             }
           }
         }
@@ -161,7 +161,7 @@ jobs:
             "[.*derecho.*]" :
             {
               "account" : "NMMM0012",
-              "job_suffix" : "em_real-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              "job_suffix" : ".em_real-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
             }
           }
         }
@@ -199,7 +199,7 @@ jobs:
             "[.*derecho.*]" :
             {
               "account" : "NMMM0012",
-              "job_suffix" : "restart-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              "job_suffix" : ".restart-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
             }
           }
         }
