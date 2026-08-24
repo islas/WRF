@@ -77,7 +77,6 @@ jobs:
             "[.*derecho.*]" :
             {
               "account" : "NMMM0012",
-              "queue"   : "main",
               "job_suffix" : "cmake-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
             }
           }
@@ -115,7 +114,6 @@ jobs:
             "[.*derecho.*]" :
             {
               "account" : "NMMM0012",
-              "queue"   : "main",
               "job_suffix" : "make-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
             }
           }
