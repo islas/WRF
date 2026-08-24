@@ -28,6 +28,10 @@ on :
       paths:
         required : true
         type     : string
+      dry_run:
+        required : false
+        type     : boolean
+        default  : false
       host:
         required : false
         type     : string
@@ -97,11 +101,12 @@ jobs:
         submodules: true
         ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
 
-    - uses: islas/sane-workflows-action@v1.0.0
+    - uses: islas/sane-workflows-action@v1.0.2
       name: ${{ inputs.name }}
       with:
         id       : ${{ inputs.label }}
         paths    : ${{ inputs.paths }}
+        dry_run  : ${{ inputs.dry_run }}
         host     : ${{ inputs.host }}
         actions  : ${{ inputs.actions }}
         actions_filter : ${{ inputs.actions_filter }}

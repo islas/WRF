@@ -31,7 +31,10 @@ on:
         type: choice
         options:
           - all-tests
-          - compile-tests
+          - cmake-tests
+          - make-tests
+          - em_real-tests
+          - restart-tests
 
 
 # https://docs.github.com/en/actions/sharing-automations/reusing-workflows#supported-keywords-for-jobs-that-call-a-reusable-workflow
@@ -62,12 +65,18 @@ jobs:
     uses : ./.github/workflows/labeled_test.yml
     name : CMake Compilation Tests
     with :
-      label    : cmake-tests
-      name     : "CMake Compilation Tests"
+      # required to do event trigger
+      event_name   : ${{ inputs.event_name }}
+      event_number : ${{ inputs.event_number }}
+      event_label  : ${{ inputs.event_label }}
+      ref          : ${{ inputs.ref }}
+      sha          : ${{ inputs.sha }}
+      # boiler plate
       host     : derecho
       paths : |
         [ ".sane/" ]
-      args : -vr='{"cpus":128,"timelimit":"00:30:00"}'
+
+      # Setup test
       patch: |
         {
           "priority" : -99,
@@ -76,22 +85,13 @@ jobs:
             "[.*derecho.*]" :
             {
               "account" : "NMMM0012",
-              "queue"   : "main",
-              "job_suffix" : "cmake-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              "job_suffix" : ".cmake-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
             }
           }
         }
-      filter : |
-        [ "build_cmake_arw_em_real_.*_dm",
-          "build_cmake_arw_em_b_wave_.*_dm"
-          ]
-
-      # required to do event trigger
-      event_name   : ${{ inputs.event_name }}
-      event_number : ${{ inputs.event_number }}
-      event_label  : ${{ inputs.event_label }}
-      ref          : ${{ inputs.ref }}
-      sha          : ${{ inputs.sha }}
+      label    : cmake-tests
+      name     : "CMake Compilation Tests"
+      actions_filter : "build_cmake_(em_real|em_b_wave).*_dm"
 
   make-tests:
     if : ${{ contains( fromJson('["make-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
@@ -103,12 +103,18 @@ jobs:
     uses : ./.github/workflows/labeled_test.yml
     name : Make Compilation Tests
     with :
-      label    : make-tests
-      name     : "Make Compilation Tests"
+      # required to do event trigger
+      event_name   : ${{ inputs.event_name }}
+      event_number : ${{ inputs.event_number }}
+      event_label  : ${{ inputs.event_label }}
+      ref          : ${{ inputs.ref }}
+      sha          : ${{ inputs.sha }}
+      # boiler plate
       host     : derecho
       paths : |
         [ ".sane/" ]
-      args : -vr='{"cpus":128,"timelimit":"00:30:00"}'
+
+      # Setup test
       patch: |
         {
           "priority" : -99,
@@ -117,22 +123,89 @@ jobs:
             "[.*derecho.*]" :
             {
               "account" : "NMMM0012",
-              "queue"   : "main",
-              "job_suffix" : "make-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              "job_suffix" : ".make-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
             }
           }
         }
-      actions : |
-        [ "build_make_em_real_.*_dmpar",
-          "build_make_em_b_wave_.*_serial"
-          ]
+      label    : make-tests
+      name     : "Make Compilation Tests"
+      actions_filter : "build_make_(em_real|em_b_wave).*_dmp"
 
+  em_real-tests:
+    if : ${{ contains( fromJson('["em_real-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
+    # I am leaving this here for posterity if this is to be replicated in private repositories for testing
+    permissions:
+      contents: read
+      pull-requests: write
+      statuses: write
+    uses : ./.github/workflows/labeled_test.yml
+    name : EM REAL Tests
+    with :
       # required to do event trigger
       event_name   : ${{ inputs.event_name }}
       event_number : ${{ inputs.event_number }}
       event_label  : ${{ inputs.event_label }}
       ref          : ${{ inputs.ref }}
       sha          : ${{ inputs.sha }}
+      # boiler plate
+      host     : derecho
+      paths : |
+        [ ".sane/" ]
+
+      # Setup test
+      patch: |
+        {
+          "priority" : -99,
+          "hosts" :
+          {
+            "[.*derecho.*]" :
+            {
+              "account" : "NMMM0012",
+              "job_suffix" : ".em_real-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+            }
+          }
+        }
+      label    : em_real-tests
+      name     : "EM REAL Tests"
+      actions_filter : "em_real([A-Z]?)_[c]?make"
+
+  restart-tests:
+    if : ${{ contains( fromJson('["restart-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
+    # I am leaving this here for posterity if this is to be replicated in private repositories for testing
+    permissions:
+      contents: read
+      pull-requests: write
+      statuses: write
+    uses : ./.github/workflows/labeled_test.yml
+    name : Restart Tests
+    with :
+      # required to do event trigger
+      event_name   : ${{ inputs.event_name }}
+      event_number : ${{ inputs.event_number }}
+      event_label  : ${{ inputs.event_label }}
+      ref          : ${{ inputs.ref }}
+      sha          : ${{ inputs.sha }}
+      # boiler plate
+      host     : derecho
+      paths : |
+        [ ".sane/" ]
+
+      # Setup test
+      patch: |
+        {
+          "priority" : -99,
+          "hosts" :
+          {
+            "[.*derecho.*]" :
+            {
+              "account" : "NMMM0012",
+              "job_suffix" : ".restart-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+            }
+          }
+        }
+      label    : restart-tests
+      name     : "Restart Tests"
+      actions_filter : "restart.*_[c]?make"
 
   # In the event that 'all-tests' is used, this final job will be the one to remove
   # the label from the PR
@@ -140,7 +213,7 @@ jobs:
     if : ${{ !cancelled() && inputs.event_label == 'all-tests' }}
     name : Remove 'all-tests' label
     runs-on: ubuntu-latest
-    needs : [ compile-tests ] # Put tests here to make this wait for the tests to complete
+    needs : [ cmake-tests, make-tests ] # Put tests here to make this wait for the tests to complete
     permissions:
       pull-requests: write
     steps: 
