@@ -19,7 +19,7 @@ def wrf_coop_reg_tests( orch ):
                   "wrf_case_path" : "${{ host_info.config.wrf_coop.run_wrf_case_path }}",
                   "wrf_met_path"  : "${{ host_info.config.wrf_coop.run_wrf_met_path }}",
                   "wrf_met_folder": "em_real",
-                  "wrf_dir"       : "${{ dependencies.${{ config.build }}.outputs.build_dir }}/test/${{ config.wrf_dir }}",
+                  "wrf_dir"       : "${{ dependencies.${{ config.build }}.outputs.install_dir }}/test/${{ config.wrf_dir }}",
                   "resources"     : { "cpus" : 1 },
                   "config" :
                   {
@@ -281,7 +281,7 @@ def wrf_coop_reg_tests( orch ):
         action = sane.Action( id )
         action.config["command"] = ".sane/wrf/scripts/compare_wrf.sh"
         action.config["arguments"] = [
-                                      "${{ dependencies.${{ config.build }}.outputs.build_dir }}/external/io_netcdf/diffwrf",
+                                      "${{ dependencies.${{ config.build }}.outputs.diffwrf_nc }}",
                                       *[ f"${{{{ dependencies.{wrf_case}_{nml_case}_{comp}.outputs.data }}}}" for comp in case_dict["compare"] ]
                                       ]
         action.config["build"] = build
