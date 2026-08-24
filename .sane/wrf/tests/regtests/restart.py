@@ -46,7 +46,7 @@ def feature_restart_em_real( orch ):
     init_wrf.wrf_case_path   = "${{ host_info.config.wrf_restart.run_wrf_case_path }}"
     init_wrf.wrf_met_path    = "${{ host_info.config.wrf_restart.run_wrf_met_path }}"
     init_wrf.wrf_met_folder  = "standard"
-    init_wrf.wrf_dir         = "${{ dependencies.${{ config.build }}.outputs.build_dir }}/test/em_real"
+    init_wrf.wrf_dir         = "${{ dependencies.${{ config.build }}.outputs.install_dir }}/test/em_real"
     init_wrf.wrf_run_dir     = "regtests/output/restart_${{ wrf_case }}"
     init_wrf.environment     = "gnu"
     init_wrf.modify_environ  = True
@@ -61,7 +61,7 @@ def feature_restart_em_real( orch ):
     restart.environment     = "gnu"
     restart.wrf_nml         = "namelist.input.2"
     restart.wrf_restart_nml = "namelist.input.3"
-    restart.wrf_diff_exec   = "${{ dependencies.${{ config.build }}.outputs.build_dir }}/external/io_netcdf/diffwrf"
+    restart.wrf_diff_exec   = "${{ dependencies.${{ config.build }}.outputs.diffwrf_nc }}"
     restart.add_dependencies( init_wrf.id, build )
     restart.add_resource_requirements( { "cpus" : 8, "timelimit" : "00:25:00" } )
 
