@@ -46,6 +46,21 @@
           }
         }
       }
+    },
+    "actions" :
+    {
+      // CMake builds
+      "[build_.*]" : { "resources" : { "derecho" : { "cpus" : 16 } } },
+      "[build_cmake.*gnu.*]" : { "resources" : { "derecho" : { "timelimit" : "00:10:00" } } },
+      "[build_cmake.*intel.*]" : { "resources" : { "derecho" : { "timelimit" : "00:20:00" } } },
+      "[build_cmake.*nvhpc.*]" : { "resources" : { "derecho" : { "timelimit" : "00:20:00" } } },
+      // Make builds
+      "[build_make.*gnu.*]" : { "resources" : { "derecho" : { "timelimit" : "00:20:00" } } },
+      "[build_make.*intel.*]" : { "resources" : { "derecho" : { "timelimit" : "00:55:00" } } },
+      "[build_make.*nvhpc.*]" : { "resources" : { "derecho" : { "timelimit" : "00:45:00" } } },
+      // Intel memory reqs
+      "[build_.*intel-oneapi.*]" : { "resources" : { "derecho" : { "memory" : "64gb" } } },
+      "[build_.*intel-classic.*]" : { "resources" : { "derecho" : { "memory" : "32gb" } } }
     }
   }
 }
