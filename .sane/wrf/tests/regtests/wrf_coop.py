@@ -295,7 +295,7 @@ def wrf_coop_reg_tests( orch ):
           action.environment = default["environment"]
           # Not very intesive
           action.local = True
-          action.add_dependencies( *[ f"{wrf_case}_{nml_case}_{comp}" for comp in case_dict["compare"] ], build )
+          action.add_dependencies( *[ f"{wrf_case}_{nml_case}_{comp}_{build_type}" for comp in case_dict["compare"] ], build )
           action.add_resource_requirements( { "cpus" : 1 } )
           orch.add_action( action )
       # Now add one final action that allows us to run this full case
@@ -305,7 +305,7 @@ def wrf_coop_reg_tests( orch ):
       action.config["command"] = "echo"
       action.config["arguments"] = [ "final sync step, nothing here" ]
       if len( case_dict["compare"] ) > 1:
-        action.add_dependencies( *[ f"{wrf_case}_{nml_case}" for nml_case in case_dict["nml_cases"] ] )
+        action.add_dependencies( *[ f"{wrf_case}_{nml_case}_{build_type}" for nml_case in case_dict["nml_cases"] ] )
       else:
-        action.add_dependencies( *[ f"{wrf_case}_{nml_case}_{comp}" for comp in case_dict["compare"] for nml_case in case_dict["nml_cases"] ] )
+        action.add_dependencies( *[ f"{wrf_case}_{nml_case}_{comp}_{build_type}" for comp in case_dict["compare"] for nml_case in case_dict["nml_cases"] ] )
       orch.add_action( action )
