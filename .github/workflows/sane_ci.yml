@@ -91,7 +91,8 @@ jobs:
         }
       label    : cmake-tests
       name     : "CMake Compilation Tests"
-      actions_filter : "build_cmake_(em_real|em_b_wave).*_dm"
+      actions_filter : |
+        [ "build_cmake_(em_real|em_b_wave).*_dm" ]
 
   make-tests:
     if : ${{ contains( fromJson('["make-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
@@ -129,7 +130,8 @@ jobs:
         }
       label    : make-tests
       name     : "Make Compilation Tests"
-      actions_filter : [ "build_make_(em_real|em_b_wave).*_dmp" ]
+      actions_filter : |
+        [ "build_make_(em_real|em_b_wave).*_dmp" ]
 
   em_real-tests:
     if : ${{ contains( fromJson('["em_real-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
@@ -167,7 +169,8 @@ jobs:
         }
       label    : em_real-tests
       name     : "EM REAL Tests"
-      actions_filter : [ "em_real([A-Z]?)_[c]?make" ]
+      actions_filter : |
+        [ "em_real([A-Z]?)_[c]?make" ]
 
   restart-tests:
     if : ${{ contains( fromJson('["restart-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
@@ -205,7 +208,8 @@ jobs:
         }
       label    : restart-tests
       name     : "Restart Tests"
-      actions_filter : [ "restart.*_[c]?make" ]
+      actions_filter : |
+        [ "restart.*_[c]?make" ]
 
   # In the event that 'all-tests' is used, this final job will be the one to remove
   # the label from the PR
