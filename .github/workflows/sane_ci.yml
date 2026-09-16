@@ -73,7 +73,7 @@ jobs:
       sha          : ${{ inputs.sha }}
       # boiler plate
       host     : derecho
-      paths : |
+      paths : >- # folded block scalar strip trailing newlines
         [ ".sane/" ]
 
       # Setup test
@@ -91,7 +91,7 @@ jobs:
         }
       label    : cmake-tests
       name     : "CMake Compilation Tests"
-      actions_filter : |
+      actions_filter : >-
         [ "build_cmake_(em_real|em_b_wave).*_dm" ]
 
   make-tests:
@@ -112,7 +112,7 @@ jobs:
       sha          : ${{ inputs.sha }}
       # boiler plate
       host     : derecho
-      paths : |
+      paths : >-
         [ ".sane/" ]
 
       # Setup test
@@ -130,7 +130,7 @@ jobs:
         }
       label    : make-tests
       name     : "Make Compilation Tests"
-      actions_filter : |
+      actions_filter : >-
         [ "build_make_(em_real|em_b_wave).*_dmp" ]
 
   em_real-tests:
@@ -151,7 +151,7 @@ jobs:
       sha          : ${{ inputs.sha }}
       # boiler plate
       host     : derecho
-      paths : |
+      paths : >-
         [ ".sane/" ]
 
       # Setup test
@@ -169,7 +169,7 @@ jobs:
         }
       label    : em_real-tests
       name     : "EM REAL Tests"
-      actions_filter : |
+      actions_filter : >-
         [ "em_real([A-Z]?)_[c]?make" ]
 
   restart-tests:
@@ -190,7 +190,7 @@ jobs:
       sha          : ${{ inputs.sha }}
       # boiler plate
       host     : derecho
-      paths : |
+      paths : >-
         [ ".sane/" ]
 
       # Setup test
@@ -208,7 +208,7 @@ jobs:
         }
       label    : restart-tests
       name     : "Restart Tests"
-      actions_filter : |
+      actions_filter : >-
         [ "restart.*_[c]?make" ]
 
   # In the event that 'all-tests' is used, this final job will be the one to remove
