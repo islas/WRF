@@ -50,7 +50,8 @@ on :
         type     : string
       upload :
         required : false
-        type     : boolean
+        type     : string
+        default  : 'on_failure'
       cache:
         required : false
         type     : boolean
