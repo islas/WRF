@@ -14,7 +14,7 @@ def add_build_for_envs_cmake( orch ):
     for case in configurations[core]:
       sm_desc = "_sm" if sm == "ON" else ""
       dm_desc = "_dm" if dm == "ON" else ""
-      id = f"{core}_{case}_{env}_{build_type}{sm_desc}{dm_desc}".lower()
+      id = f"{case}_{env}_{build_type}{dm_desc}{sm_desc}".lower()
 
       action = sane.Action( f"build_cmake_{id}" )
       action.config["command"]     = ".sane/wrf/scripts/buildCMake.sh"
@@ -28,7 +28,8 @@ def add_build_for_envs_cmake( orch ):
       action.config["sm"]          = sm
 
       action.outputs["install_dir"] = action.config["install_dir"]
-      action.outputs["build_dir"]   = action.config["install_dir"]
+      action.outputs["build_dir"]   = action.config["build_dir"]
+      action.outputs["diffwrf_nc"]  = action.config["install_dir"] + "/bin/diffwrf_nc"
       args = []
 
       config_cmd = [ "-p ${{ config.compiler }}", "-d", "${{ config.build_dir }}", "-i", "${{ config.install_dir }}" ]
@@ -54,7 +55,7 @@ def add_build_for_envs_make( orch ):
   # Assumes x86
   env2opt = [ 32, 13, 76, 52 ]
 
-  par_opt = { "serial" : 0, "smpar" : 1, "dmpar" : 2, "dm_sm" : 3 }
+  par_opt = { "serial" : 0, "sm" : 1, "dm" : 2, "dm_sm" : 3 }
   debug = [ True, False ]
   targets = [ "em_real", "em_fire", "em_b_wave" ]
   orch.log( f"Creating Make build permutations..." ) 
@@ -73,6 +74,7 @@ def add_build_for_envs_make( orch ):
     
     action.outputs["install_dir"] = action.config["install_dir"]
     action.outputs["build_dir"]   = action.config["install_dir"]
+    action.outputs["diffwrf_nc"]  = action.config["install_dir"] + "/external/io_netcdf/diffwrf"
     args = []
 
     args.extend( [ "-c", "${{ config.compile_opt }}", "-n", "${{ config.nesting }}" ] )

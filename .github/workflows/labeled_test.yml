@@ -28,6 +28,10 @@ on :
       paths:
         required : true
         type     : string
+      dry_run:
+        required : false
+        type     : boolean
+        default  : false
       host:
         required : false
         type     : string
@@ -46,7 +50,8 @@ on :
         type     : string
       upload :
         required : false
-        type     : boolean
+        type     : string
+        default  : 'on_failure'
       cache:
         required : false
         type     : boolean
@@ -97,11 +102,12 @@ jobs:
         submodules: true
         ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
 
-    - uses: islas/sane-workflows-action@v1.0.0
+    - uses: islas/sane-workflows-action@v1.2.0
       name: ${{ inputs.name }}
       with:
         id       : ${{ inputs.label }}
         paths    : ${{ inputs.paths }}
+        dry_run  : ${{ inputs.dry_run }}
         host     : ${{ inputs.host }}
         actions  : ${{ inputs.actions }}
         actions_filter : ${{ inputs.actions_filter }}
@@ -112,7 +118,8 @@ jobs:
         cache_id : ${{ inputs.cache_id }}
         venv     : ${{ inputs.venv }}
         python_dependencies : ${{ inputs.python_dependencies }}
-        upgrade   : ${{ inputs.upgrade }}
+        upgrade  : ${{ inputs.upgrade }}
+        pre      : true
 
     - name: Set completed status
       if: ${{ always() }}
