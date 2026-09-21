@@ -131,7 +131,7 @@ jobs:
       label    : make-tests
       name     : "Make Compilation Tests"
       actions_filter : >-
-        [ "build_make_(em_real|em_b_wave).*_dmp" ]
+        [ "build_make_(em_real|em_b_wave).*_dm" ]
 
   em_real-tests:
     if : ${{ contains( fromJson('["em_real-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
