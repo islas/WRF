@@ -9,9 +9,7 @@ import wrf.custom_actions.run_wrf as run_wrf
 def wrf_coop_reg_tests( orch ):
   # init and run are based off of this default
   default = {
-              "wrf_run_dir"   : "regtests/output/${{ id }}",
-              "environment" : "gnu",
-              "modify_environ" : True,
+              "environment" : "gnu"
             }
   # init settings, most of which are inherited to run
   default_init = {
@@ -228,11 +226,15 @@ def wrf_coop_reg_tests( orch ):
         # as well as any specific config options for that nml case
         nml = f"namelist.input.{nml_case}"
         base_opts = copy.deepcopy( default )
+        base_opts["wrf_run_dir"]        = f"regtests/output/${{{{ id }}}}_{build_type}",
         base_opts["wrf_nml"]            = nml
         base_opts["config"]             = {}
         base_opts["config"]["case"]     = wrf_case
         base_opts["config"]["target"]   = case_dict["target"]
         base_opts["config"]["build"]    = build
+
+        if build_type == "make":
+          base_opts["modify_environ"] = True
 
         # Create the initial conditions for this nml
         init_wrf = run_wrf.InitWRF( f"{wrf_case}_{nml_case}_init_{build_type}" )
@@ -289,7 +291,7 @@ def wrf_coop_reg_tests( orch ):
           action.config["command"] = ".sane/wrf/scripts/compare_wrf.sh"
           action.config["arguments"] = [
                                         "${{ dependencies.${{ config.build }}.outputs.diffwrf_nc }}",
-                                        *[ f"${{{{ dependencies.{wrf_case}_{nml_case}_{comp}.outputs.data }}}}" for comp in case_dict["compare"] ]
+                                        *[ f"${{{{ dependencies.{wrf_case}_{nml_case}_{comp}_{build_type}.outputs.data }}}}" for comp in case_dict["compare"] ]
                                         ]
           action.config["build"] = build
           action.environment = default["environment"]

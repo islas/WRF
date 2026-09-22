@@ -52,7 +52,7 @@ def feature_restart_em_real( orch ):
       init_wrf.wrf_met_path    = "${{ host_info.config.wrf_restart.run_wrf_met_path }}"
       init_wrf.wrf_met_folder  = "standard"
       init_wrf.wrf_dir         = "${{ dependencies.${{ config.build }}.outputs.install_dir }}/test/em_real"
-      init_wrf.wrf_run_dir     = "regtests/output/restart_${{ wrf_case }}"
+      init_wrf.wrf_run_dir     = f"regtests/output/restart_${{{{ wrf_case }}}}_{build_type}"
       init_wrf.environment     = "gnu"
       init_wrf.modify_environ  = True
       init_wrf.config["build"] = build
