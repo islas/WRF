@@ -138,7 +138,7 @@ jobs:
           })
 
     - name : Remove '${{ inputs.label }}' label
-      if : ${{ !cancelled() && inputs.event_label == inputs.label }}
+      if : ${{ always() && inputs.event_label == inputs.label }}
       env:
         PR_NUMBER: ${{ inputs.event_number }}
       run: |
@@ -147,8 +147,3 @@ jobs:
           -H "Accept: application/vnd.github.v3+json" \
           -H 'Authorization: token ${{ github.token }}' \
           https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ inputs.label }}
-    
-
-
-  
-
