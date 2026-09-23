@@ -102,7 +102,7 @@ jobs:
         submodules: true
         ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
 
-    - uses: islas/sane-workflows-action@53260e4def5e7c641414653bc5d210c64ff5a6c0
+    - uses: islas/sane-workflows-action@757e91f05db77f26f584607acbae6ebf4943078a
       name: ${{ inputs.name }}
       with:
         id       : ${{ inputs.label }}
