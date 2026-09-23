@@ -226,7 +226,7 @@ def wrf_coop_reg_tests( orch ):
         # as well as any specific config options for that nml case
         nml = f"namelist.input.{nml_case}"
         base_opts = copy.deepcopy( default )
-        base_opts["wrf_run_dir"]        = f"regtests/output/${{{{ id }}}}_{build_type}",
+        base_opts["wrf_run_dir"]        = f"regtests/output/${{{{ id }}}}_{build_type}"
         base_opts["wrf_nml"]            = nml
         base_opts["config"]             = {}
         base_opts["config"]["case"]     = wrf_case
