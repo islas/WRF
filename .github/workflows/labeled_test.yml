@@ -28,6 +28,10 @@ on :
       paths:
         required : true
         type     : string
+      dry_run:
+        required : false
+        type     : boolean
+        default  : false
       host:
         required : false
         type     : string
@@ -46,7 +50,8 @@ on :
         type     : string
       upload :
         required : false
-        type     : boolean
+        type     : string
+        default  : 'on_failure'
       cache:
         required : false
         type     : boolean
@@ -66,6 +71,12 @@ on :
         type     : boolean
         default  : true
 
+      # Skip known test failures (use cautiously)
+      known_test_errors:
+        required : false
+        type     : string
+        default  : '[]'
+
 jobs:
   labeled_test:
     # Is 5 days a reasonable wait time for testing?
@@ -78,7 +89,7 @@ jobs:
     # https://github.com/orgs/community/discussions/24616
     - name: Set pending status
       id: check_run_start
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -92,16 +103,19 @@ jobs:
             state:      'pending'
           })
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: true
         ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
 
-    - uses: islas/sane-workflows-action@v1.0.0
+    - uses: islas/sane-workflows-action@9f9a83951d82f73ea2525fef7e2470b7ec297aa5
       name: ${{ inputs.name }}
+      id: sane_workflows
+      continue-on-error: ${{ inputs.known_test_errors != '[]' }}
       with:
         id       : ${{ inputs.label }}
         paths    : ${{ inputs.paths }}
+        dry_run  : ${{ inputs.dry_run }}
         host     : ${{ inputs.host }}
         actions  : ${{ inputs.actions }}
         actions_filter : ${{ inputs.actions_filter }}
@@ -112,11 +126,32 @@ jobs:
         cache_id : ${{ inputs.cache_id }}
         venv     : ${{ inputs.venv }}
         python_dependencies : ${{ inputs.python_dependencies }}
-        upgrade   : ${{ inputs.upgrade }}
+        upgrade  : ${{ inputs.upgrade }}
+        pre      : true
+
+    - if: ${{ inputs.known_test_errors != '[]' }}
+      name: Filter known test errors
+      shell: python
+      run: |
+        import json
+        import re
+        from pathlib import Path
+
+        workflow = "${{ steps.sane_workflows.outputs.save_location }}/orchestrator.json"
+        actions  = json.loads( Path( workflow ).read_text() )["actions"]
+        failed   = [ a for a, info in actions.items() if info["status"] == "failure" ]
+
+        known_test_errors = [ re.compile(s) for s in json.loads( """${{ inputs.known_test_errors }}""" ) ]
+
+        filtered = [ s for s in failed if not any( r.search(s) for r in known_test_errors ) ]
+
+        if len( filtered ) > 0:
+          print( f"::error::Workflow contains unignored Action errors" )
+          exit( 1 )
 
     - name: Set completed status
       if: ${{ always() }}
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -131,7 +166,7 @@ jobs:
           })
 
     - name : Remove '${{ inputs.label }}' label
-      if : ${{ !cancelled() && inputs.event_label == inputs.label }}
+      if : ${{ always() && inputs.event_label == inputs.label }}
       env:
         PR_NUMBER: ${{ inputs.event_number }}
       run: |
@@ -140,8 +175,3 @@ jobs:
           -H "Accept: application/vnd.github.v3+json" \
           -H 'Authorization: token ${{ github.token }}' \
           https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${{ inputs.label }}
-    
-
-
-  
-
