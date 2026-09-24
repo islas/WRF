@@ -232,9 +232,7 @@ def wrf_coop_reg_tests( orch ):
         base_opts["config"]["case"]     = wrf_case
         base_opts["config"]["target"]   = case_dict["target"]
         base_opts["config"]["build"]    = build
-
-        if build_type == "make":
-          base_opts["modify_environ"] = True
+        base_opts["modify_environ"]     = build_type == "make"
 
         # Create the initial conditions for this nml
         init_wrf = run_wrf.InitWRF( f"{wrf_case}_{nml_case}_init_{build_type}" )
