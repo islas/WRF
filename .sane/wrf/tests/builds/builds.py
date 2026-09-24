@@ -90,3 +90,75 @@ def add_build_for_envs_make( orch ):
     orch.add_action( action )
 
 
+@sane.register
+def add_chem_builds_make( orch ):
+  configurations = { "em_chem" : "-d chem", "em_chem_kpp" : "-d chem kpp" }
+  par_opt = { "serial" : 32, "mpi" : 34 }
+  orch.log( "Creating chemistry Make build permutations..." )
+  for case, mode in itertools.product( configurations, par_opt ):
+    action = sane.Action( f"build_make_{case}_gnu_debug_{mode}" )
+    action.config["command"]     = ".sane/wrf/scripts/buildMake.sh"
+    action.config["compile_opt"] = par_opt[mode]
+    action.config["build_dir"]   = orch.working_directory + "/_${{ id }}"
+    action.config["install_dir"] = action.config["build_dir"]
+    action.config["target"]      = "em_real"
+    action.config["nesting"]     = 1
+    action.config["par_opt"]     = mode
+    action.config["optstr"]      = configurations[case]
+
+    action.outputs["install_dir"] = action.config["install_dir"]
+    action.outputs["build_dir"]   = action.config["build_dir"]
+    action.outputs["diffwrf_nc"]  = action.config["install_dir"] + "/external/io_netcdf/diffwrf"
+    args = []
+
+    args.extend( [ "-c", "${{ config.compile_opt }}", "-n", "${{ config.nesting }}" ] )
+    args.extend( [ "-o", "${{ config.optstr }}" ] )
+    args.extend( [ "-b", "${{ config.target }} -j ${{ resources.cpus }}" ] )
+    args.extend( [ "-d", "${{ config.install_dir }}" ] )
+
+    action.config["arguments"] = args
+    action.add_resource_requirements( { "cpus" : 8, "memory" : "8gb", "timelimit" : "00:50:00" } )
+    action.environment = "gnu"
+    orch.add_action( action )
+
+
+@sane.register
+def add_chem_builds_cmake( orch ):
+  configurations = { "em_chem" : "OFF", "em_chem_kpp" : "ON" }
+  par_opt = { "serial" : "OFF", "mpi" : "ON" }
+  orch.log( "Creating chemistry CMake build permutations..." )
+  for case, mode in itertools.product( configurations, par_opt ):
+    action = sane.Action( f"build_cmake_{case}_gnu_debug_{mode}" )
+    action.config["command"]     = ".sane/wrf/scripts/buildCMake.sh"
+    action.config["compiler"]    = "gfortran"
+    action.config["build_dir"]   = orch.working_directory + "/_${{ id }}"
+    action.config["install_dir"] = orch.working_directory + "/install_${{ id }}"
+    action.config["build_type"]  = "Debug"
+    action.config["core"]        = "ARW"
+    action.config["case"]        = "EM_REAL"
+    action.config["dm"]          = par_opt[mode]
+    action.config["sm"]          = "OFF"
+    action.config["chem"]        = "ON"
+    action.config["kpp"]         = configurations[case]
+
+    action.outputs["install_dir"] = action.config["install_dir"]
+    action.outputs["build_dir"]   = action.config["build_dir"]
+    action.outputs["diffwrf_nc"]  = action.config["install_dir"] + "/bin/diffwrf_nc"
+    args = []
+
+    config_cmd = [ "-p ${{ config.compiler }}", "-d", "${{ config.build_dir }}", "-i", "${{ config.install_dir }}" ]
+    config_cmd.extend( [ "-x -- -DWRF_NESTING=BASIC", "-DCMAKE_BUILD_TYPE=${{ config.build_type }}" ] )
+    config_cmd.extend( [ "-DWRF_CORE=${{ config.core }}", "-DWRF_CASE=${{ config.case }}" ] )
+    config_cmd.extend( [ "-DUSE_OPENMP=${{ config.sm }}", "-DUSE_MPI=${{ config.dm }}" ] )
+    config_cmd.extend( [ "-DENABLE_CHEM=${{ config.chem }}", "-DENABLE_KPP=${{ config.kpp }}" ] )
+    build_cmd = [ "${{ config.build_dir }}", "-j ${{ resources.cpus }}" ]
+    clean_cmd = [ "-d", "${{ config.build_dir }}", "-i", "${{ config.install_dir }}" ]
+
+    args.extend( [ "-c", " ".join( config_cmd ) ] )
+    args.extend( [ "-b", " ".join( build_cmd ) ] )
+    args.extend( [ "-r", " ".join( clean_cmd ) ] )
+
+    action.config["arguments"] = args
+    action.add_resource_requirements( { "cpus" : 8, "memory" : "8gb", "timelimit" : "00:50:00" } )
+    action.environment = "gnu"
+    orch.add_action( action )

@@ -36,14 +36,15 @@ to inspect the state, status, and logs:
 ```bash
 sane_view --help
 
-usage: sane_view [-h] {usage,status,state,logs} ...
+usage: sane_view.py [-h] {usage,status,state,logs,summary} ...
 
 positional arguments:
-  {usage,status,state,logs}
+  {usage,status,state,logs,summary}
     usage               View resource usage
     status              View action status
     state               View action state
     logs                View action logs
+    summary             View workflow summary
 ```
 
 For instance, to get a list of all logs for tests that have failed:
@@ -82,7 +83,7 @@ The structure of the tests is as follows:
         │   └── builds.py       #< Python module that sets up ALL our compilation tests (make + cmake)
         └── regtests
             ├── restart.py      #< Python module that sets up the WRF restart feature tests
-            └── wrf_coop.py     #< Python module that sets up the WRF Coop em_real* tests
+            └── wrf_coop.py     #< Python module that sets up the WRF Coop tests
 ```
 
 # Tests
@@ -102,8 +103,17 @@ All builds have permutations of:
 * SM/DM
 * EM_REAL/EM_FIRE/EM_B_WAVE
 
+A couple chemistry builds exists for the GNU environment, using the permutations:
+* Make/CMake
+* chem/kpp
+* serial/mpi
+
 
 ## WRF Coop
+The WRF Coop Tests were originally created in a CentOS container. These ports aim to
+isolate the core logic from the container environment concerns.
+
+### WRF EM_REAL
 The following tests cover the WRF Coop Test port:
 | Real Test Cases  |  |
 | ------------- | ------------- |
@@ -125,6 +135,34 @@ respectively.
 
 More information on originating source can be found here:\
 https://github.com/wrf-model/wrf-coop/blob/master/README_user.md
+
+### WRF Chemistry
+
+The chem tests are also ported from WRF Coop.
+* `em_chem` ports namelists `1`, `2`, and `5`
+* `em_chem_kpp` ports namelist `120`
+
+Each test is composed of a serial and MPI full runs with Make and CMake.
+The Make build makes use of command-line argument configuration instead of the
+old environment variable setup.
+Cmake uses the supported `ENABLE_CHEM=ON` and `ENABLE_KPP=ON`.
+
+Select `em_chem` or `em_chem_kpp` for both build systems; append `_make` or
+`_cmake` to select just one.
+
+KPP also needs `flex` and a yacc-compatible parser on the host environment's `PATH`;
+CMake KPP builds require Bison in lieu of yacc. CMake must be able to discover the
+FLEX installation (use the host's `CMAKE_PREFIX_PATH` for non-system installs).
+The host GNU environment sets `FLEX_LIB_DIR` to locate `libfl`, and
+`YACC` supplies the parser command including `-d`. Override these tool
+settings in a host environment patch when necessary.
+
+```bash
+# Run em_chem tests on derecho
+sane_runner -p .sane -sh derecho -a em_chem -r
+```
+A PBS dry-run does not verify scheduler acceptance, installed KPP tools,
+case data availability, or numerical results.
 
 ## WRF Restart
 The following tests cover the WRF Restart feature tests:
@@ -300,3 +338,17 @@ you to group sets of runs together to build out a suite of tests.
 init_wrf.wrf_case_path   = "${{ host_info.config.wrf_coop.run_wrf_case_path }}"
 init_wrf.wrf_met_path    = "${{ host_info.config.wrf_coop.run_wrf_met_path }}"
 ```
+
+# Adding support for Custom Host
+For custom hosts, include a local host patch directory with
+`-p <your host patch> -sh <your host>`. Add or set environment variables as needed
+using `"env_vars"` with supported commands, or an environment script via `"env_scripts"`
+
+Make sure for the tests you plan to run you provide the host `"config"` information
+that the tests expect. 
+* `wrf_coop` tests expect `config.wrf_coop` to have `run_wrf_case_path` and `run_wrf_met_path`
+  - Case files are from: https://github.com/wrf-model/SCRIPTS/tree/master/Namelists/weekly
+  - Met files are from: https://www2.mmm.ucar.edu/wrf/dave/data_smaller.tar.gz
+* `wrf_restart` tests expect `config.wrf_restart` to have `run_wrf_case_path` and `run_wrf_met_path`
+  - Case files are from: https://github.com/wrf-model/wrf_feature_testing/tree/main/cases
+  - Met files are from: https://www2.mmm.ucar.edu/wrf/dave/feature_data.tar.gz
