@@ -309,3 +309,76 @@ def wrf_coop_reg_tests( orch ):
       else:
         action.add_dependencies( *[ f"{wrf_case}_{nml_case}_{comp}_{build_type}" for comp in case_dict["compare"] for nml_case in case_dict["nml_cases"] ] )
       orch.add_action( action )
+
+
+@sane.register
+def wrf_chem_tests( orch ):
+  cases = { "em_chem" : [ "1", "2", "5" ], "em_chem_kpp" : [ "120" ] }
+  for build_type in [ "make", "cmake" ]:
+    for case, namelists in cases.items():
+      builds = {
+        mode : f"build_{build_type}_{case}_gnu_debug_{mode}"
+        for mode in [ "serial", "mpi" ]
+      }
+
+      comparisons = []
+      for nml in namelists:
+        runs = []
+        for mode in builds:
+          init = run_wrf.InitWRF( f"{case}_{nml}_init_{mode}_{build_type}" )
+          init.environment = "gnu"
+          init.wrf_case = case
+          init.wrf_case_path = "${{ host_info.config.wrf_coop.run_wrf_case_path }}"
+          init.wrf_met_path = "${{ host_info.config.wrf_coop.run_wrf_met_path }}"
+          init.wrf_met_folder = "em_chem"
+          init.wrf_dir = f"${{{{ dependencies.{builds[mode]}.outputs.install_dir }}}}/test/em_real"
+          init.wrf_run_dir = orch.working_directory + f"/regtests/output/{case}_{nml}_{mode}_{build_type}"
+          init.wrf_nml = f"namelist.input.{nml}"
+          init.modify_environ = build_type == "make"
+          init.use_mpi = mode == "mpi"
+          init.add_dependencies( builds[mode] )
+          resources = { "cpus" : 8 if mode == "mpi" else 1,
+                        "memory" : "4gb", "timelimit" : "00:30:00" }
+          init.add_resource_requirements( resources )
+          orch.add_action( init )
+
+          run = run_wrf.RunWRF( f"{case}_{nml}_{mode}_{build_type}" )
+          run.environment = "gnu"
+          run.use_mpi = mode == "mpi"
+          # Inherit the init directory, including metfiles and chemistry inputs.
+          run.add_dependencies( init.id )
+          run.add_resource_requirements( resources )
+          orch.add_action( run )
+          runs.append( run.id )
+
+        comparison = sane.Action( f"{case}_{nml}_{build_type}" )
+        comparison.environment = "gnu"
+        comparison.local = True
+        comparison.config["command"] = ".sane/wrf/scripts/compare_wrf.sh"
+        comparison.config["arguments"] = [
+          f"${{{{ dependencies.{builds['serial']}.outputs.diffwrf_nc }}}}",
+          *[ f"${{{{ dependencies.{run}.outputs.wrf_run_dir }}}}" for run in runs ]
+        ]
+        comparison.add_dependencies( builds["serial"], *runs )
+        comparison.add_resource_requirements( { "cpus" : 1 } )
+        orch.add_action( comparison )
+        comparisons.append( comparison.id )
+
+      suite = sane.Action( f"{case}_{build_type}" )
+      suite.environment = "gnu"
+      suite.local = True
+      suite.config["command"] = "echo"
+      suite.config["arguments"] = [ f"{case} ({build_type}): all serial/MPI comparisons passed" ]
+      suite.add_dependencies( *comparisons )
+      suite.add_resource_requirements( { "cpus" : 1 } )
+      orch.add_action( suite )
+
+  for case in cases:
+    suite = sane.Action( case )
+    suite.environment = "gnu"
+    suite.local = True
+    suite.config["command"] = "echo"
+    suite.config["arguments"] = [ f"{case}: Make and CMake comparisons passed" ]
+    suite.add_dependencies( f"{case}_make", f"{case}_cmake" )
+    suite.add_resource_requirements( { "cpus" : 1 } )
+    orch.add_action( suite )
