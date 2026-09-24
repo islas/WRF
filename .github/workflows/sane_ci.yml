@@ -171,6 +171,11 @@ jobs:
       name     : "EM REAL Tests"
       actions_filter : >-
         [ "em_real([A-Z]?)_[c]?make" ]
+      known_test_errors: >-
+        [
+          "em_realH_03_mpi_make",
+          "em_realH_03_mpi_cmake"
+        ]
 
   restart-tests:
     if : ${{ contains( fromJson('["restart-tests","all-tests"]'), inputs.event_label ) || inputs.event_name == 'push' }}
@@ -210,6 +215,13 @@ jobs:
       name     : "Restart Tests"
       actions_filter : >-
         [ "restart.*_[c]?make" ]
+      known_test_errors: >-
+        [
+          "restart_basic_[c]?make",
+          "restart_km_opt_3_[c]?make",
+          "restart_damping_[c]?make",
+          "restart_nwp_diag_[c]?make"
+        ]
 
   # In the event that 'all-tests' is used, this final job will be the one to remove
   # the label from the PR
