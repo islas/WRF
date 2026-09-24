@@ -139,10 +139,11 @@ jobs:
 
         workflow = "${{ steps.sane_workflows.outputs.save_location }}/orchestrator.json"
         actions  = json.loads( Path( workflow ).read_text() )["actions"]
+        failed   = [ a for a, info in actions.items() if info["status"] == "failure" ]
 
         known_test_errors = [ re.compile(s) for s in json.loads( """${{ inputs.known_test_errors }}""" ) ]
 
-        filtered = [ s for s in actions if not any( r.search(s) for r in known_test_errors ) ]
+        filtered = [ s for s in failed if not any( r.search(s) for r in known_test_errors ) ]
 
         if len( filtered ) > 0:
           print( f"::error::Workflow contains unignored Action errors" )
