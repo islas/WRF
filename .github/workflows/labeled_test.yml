@@ -131,11 +131,13 @@ jobs:
 
     - if: ${{ inputs.known_test_errors != '[]' }}
       name: Filter known test errors
+      id: check_filtered
       shell: python
       run: |
         import json
         import re
         from pathlib import Path
+        import os
 
         workflow = "${{ steps.sane_workflows.outputs.save_location }}/orchestrator.json"
         actions  = json.loads( Path( workflow ).read_text() )["actions"]
@@ -146,7 +148,10 @@ jobs:
         filtered = [ s for s in failed if not any( r.search(s) for r in known_test_errors ) ]
 
         if len( filtered ) > 0:
-          print( f"::error::Workflow contains unignored Action errors" )
+          print( "Workflow contains unignored Action errors" )
+          print( filtered )
+          with open( os.environ['GITHUB_ENV'], "a" ) as f:
+            f.write( "failure=true" )
 
     - name: Set completed status
       if: ${{ always() }}
@@ -154,6 +159,12 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
+          // Set job status
+          if (process.env.failure === 'true')
+          {
+            core.setFailed('Workflow contains unignored Action errors')
+          }
+
           github.rest.repos.createCommitStatus({
             owner:        context.repo.owner,
             repo:         context.repo.repo,
