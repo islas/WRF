@@ -219,7 +219,7 @@ jobs:
         [
           "restart_basic_[c]?make",
           "restart_km_opt_3_[c]?make",
-          "restart_damping_[c]?make",
+          "restart_w_damping_[c]?make",
           "restart_nwp_diag_[c]?make"
         ]
 
