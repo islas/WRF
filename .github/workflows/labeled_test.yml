@@ -162,7 +162,7 @@ jobs:
           // Set job status
           if (process.env.failure === 'true')
           {
-            core.setFailed('Workflow contains unignored Action errors')
+            core.setFailed('Workflow contains unignored Action errors, see workflow error')
           }
 
           github.rest.repos.createCommitStatus({
