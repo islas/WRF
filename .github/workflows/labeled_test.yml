@@ -108,7 +108,7 @@ jobs:
         submodules: true
         ref: ${{ inputs.event_name == 'push' && github.ref || inputs.ref }}
 
-    - uses: islas/sane-workflows-action@97715f45f06e9b7512a31894f9fd85131b9efbea
+    - uses: islas/sane-workflows-action@149e55f962156627528e1bc8645b76cb28de1a9f
       name: ${{ inputs.name }}
       id: sane_workflows
       continue-on-error: ${{ inputs.known_test_errors != '[]' }}
@@ -153,8 +153,8 @@ jobs:
           with open( os.environ['GITHUB_ENV'], "a" ) as f:
             f.write( "failure=true" )
 
-    - name: Set completed status
-      if: ${{ always() }}
+    - name: Set status based on filtered tests
+      if: ${{ inputs.known_test_errors != '[]' }}
       uses: actions/github-script@v8
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -165,6 +165,12 @@ jobs:
             core.setFailed('Workflow contains unignored Action errors, see workflow error')
           }
 
+    - name: Set completed status
+      if: ${{ always() }}
+      uses: actions/github-script@v8
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
           github.rest.repos.createCommitStatus({
             owner:        context.repo.owner,
             repo:         context.repo.repo,
