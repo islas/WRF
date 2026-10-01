@@ -83,6 +83,8 @@ jobs:
     timeout-minutes: 7200
     name: Run ${{ inputs.name }} on ${{ inputs.host }}
     runs-on: ${{ inputs.host }}
+    env:
+      KNOWN_TEST_ERRORS: ${{ inputs.known_test_errors }}
     steps:
     # Don't use gh checks as they are woefully underdeveloped as a feature leading
     # to confusing UI and misplaced metrics
@@ -111,6 +113,8 @@ jobs:
     - uses: islas/sane-workflows-action@149e55f962156627528e1bc8645b76cb28de1a9f
       name: ${{ inputs.name }}
       id: sane_workflows
+      # Composite actions replace the inputs context before continue-on-error is evaluated.
+      continue-on-error: ${{ env.KNOWN_TEST_ERRORS != '[]' }}
       with:
         id       : ${{ inputs.label }}
         paths    : ${{ inputs.paths }}
@@ -129,6 +133,7 @@ jobs:
         pre      : true
 
     - name: Filter known test errors
+      if: ${{ inputs.known_test_errors != '[]' }}
       id: check_filtered
       shell: python
       run: |
@@ -152,6 +157,7 @@ jobs:
             f.write( "failure=true" )
 
     - name: Set status based on filtered tests
+      if: ${{ inputs.known_test_errors != '[]' }}
       uses: actions/github-script@v8
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -159,7 +165,7 @@ jobs:
           // Set job status
           if (process.env.failure === 'true')
           {
-            core.setFailed('Workflow failure, see summary')
+            core.setFailed('Workflow contains unignored Action errors, see workflow error')
           }
 
     - name: Set completed status
