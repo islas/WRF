@@ -78,17 +78,19 @@ jobs:
 
       # Setup test
       patch: |
-        {
-          "priority" : -99,
-          "hosts" :
+        [
           {
-            "[.*derecho.*]" :
+            "priority" : -99,
+            "hosts" :
             {
-              "account" : "NMMM0012",
-              "job_suffix" : ".cmake-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              "[.*derecho.*]" :
+              {
+                "account" : "NMMM0012",
+                "job_suffix" : ".cmake-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              }
             }
           }
-        }
+        ]
       label    : cmake-tests
       name     : "CMake Compilation Tests"
       actions_filter : >-
@@ -117,17 +119,19 @@ jobs:
 
       # Setup test
       patch: |
-        {
-          "priority" : -99,
-          "hosts" :
+        [
           {
-            "[.*derecho.*]" :
+            "priority" : -99,
+            "hosts" :
             {
-              "account" : "NMMM0012",
-              "job_suffix" : ".make-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              "[.*derecho.*]" :
+              {
+                "account" : "NMMM0012",
+                "job_suffix" : ".make-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              }
             }
           }
-        }
+        ]
       label    : make-tests
       name     : "Make Compilation Tests"
       actions_filter : >-
@@ -156,17 +160,19 @@ jobs:
 
       # Setup test
       patch: |
-        {
-          "priority" : -99,
-          "hosts" :
+        [
           {
-            "[.*derecho.*]" :
+            "priority" : -99,
+            "hosts" :
             {
-              "account" : "NMMM0012",
-              "job_suffix" : ".em_real-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              "[.*derecho.*]" :
+              {
+                "account" : "NMMM0012",
+                "job_suffix" : ".em_real-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              }
             }
           }
-        }
+        ]
       label    : em_real-tests
       name     : "EM REAL Tests"
       actions_filter : >-
@@ -200,17 +206,19 @@ jobs:
 
       # Setup test
       patch: |
-        {
-          "priority" : -99,
-          "hosts" :
+        [
           {
-            "[.*derecho.*]" :
+            "priority" : -99,
+            "hosts" :
             {
-              "account" : "NMMM0012",
-              "job_suffix" : ".restart-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              "[.*derecho.*]" :
+              {
+                "account" : "NMMM0012",
+                "job_suffix" : ".restart-tests.${{ inputs.event_name == 'push' && github.ref_name || inputs.event_number }}"
+              }
             }
           }
-        }
+        ]
       label    : restart-tests
       name     : "Restart Tests"
       actions_filter : >-
