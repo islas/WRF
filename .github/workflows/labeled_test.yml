@@ -111,7 +111,6 @@ jobs:
     - uses: islas/sane-workflows-action@149e55f962156627528e1bc8645b76cb28de1a9f
       name: ${{ inputs.name }}
       id: sane_workflows
-      continue-on-error: ${{ inputs.known_test_errors != '[]' }}
       with:
         id       : ${{ inputs.label }}
         paths    : ${{ inputs.paths }}
@@ -129,8 +128,7 @@ jobs:
         upgrade  : ${{ inputs.upgrade }}
         pre      : true
 
-    - if: ${{ inputs.known_test_errors != '[]' }}
-      name: Filter known test errors
+    - name: Filter known test errors
       id: check_filtered
       shell: python
       run: |
@@ -154,7 +152,6 @@ jobs:
             f.write( "failure=true" )
 
     - name: Set status based on filtered tests
-      if: ${{ inputs.known_test_errors != '[]' }}
       uses: actions/github-script@v8
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -162,7 +159,7 @@ jobs:
           // Set job status
           if (process.env.failure === 'true')
           {
-            core.setFailed('Workflow contains unignored Action errors, see workflow error')
+            core.setFailed('Workflow failure, see summary')
           }
 
     - name: Set completed status
