@@ -26,6 +26,7 @@ def add_build_for_envs_cmake( orch ):
       action.config["case"]        = case
       action.config["dm"]          = dm
       action.config["sm"]          = sm
+      action.config["clean_build"] = True
 
       action.outputs["install_dir"] = action.config["install_dir"]
       action.outputs["build_dir"]   = action.config["build_dir"]
@@ -42,6 +43,7 @@ def add_build_for_envs_cmake( orch ):
       args.extend( [ "-c", " ".join( config_cmd ) ] )
       args.extend( [ "-b", " ".join( build_cmd ) ] )
       args.extend( [ "-r", " ".join( clean_cmd ) ] )
+      args.extend( [ "-f", "${{ config.clean_build }}" ] )
 
       action.config["arguments"] = args
       action.add_resource_requirements( { "cpus" : 8 } )
@@ -71,6 +73,7 @@ def add_build_for_envs_make( orch ):
     action.config["nesting"]     = 1
     action.config["par_opt"]     = opt
     action.config["optstr"]      = "-d" if dbg else ""
+    action.config["clean_build"] = True
     
     action.outputs["install_dir"] = action.config["install_dir"]
     action.outputs["build_dir"]   = action.config["install_dir"]
@@ -83,6 +86,7 @@ def add_build_for_envs_make( orch ):
 
     args.extend( [ "-b", "${{ config.target }} -j ${{ resources.cpus }}" ] )
     args.extend( [ "-d", "${{ config.install_dir }}" ] )
+    args.extend( [ "-f", "${{ config.clean_build }}" ] )
 
     action.config["arguments"] = args
     action.add_resource_requirements( { "cpus" : 8 } )
