@@ -57,10 +57,10 @@ def wrf_coop_reg_tests( orch ):
       "target"  : "em_real",
       "nml_cases" :
       {
-        "3dtke"    : { },
-        "rap"      : { },
-        "conus"    : { },
-        "tropical" : { }
+        "3dtke"    : { "resources" : { "timelimit" : "00:45:00" } },
+        "rap"      : { "resources" : { "timelimit" : "00:45:00" } },
+        "conus"    : { "resources" : { "timelimit" : "00:45:00" } },
+        "tropical" : { "resources" : { "timelimit" : "00:45:00" } }
       }
     },
     "em_realA" :
