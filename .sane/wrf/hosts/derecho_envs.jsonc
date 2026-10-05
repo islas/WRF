@@ -52,7 +52,7 @@
       {
         // CMake builds
         "[build_.*]" : { "resources" : { "derecho" : { "cpus" : 16 } } },
-        "[build_cmake.*gnu.*]" : { "resources" : { "derecho" : { "timelimit" : "00:10:00" } } },
+        "[build_cmake.*gnu.*]" : { "resources" : { "derecho" : { "timelimit" : "00:12:00" } } },
         "[build_cmake.*intel.*]" : { "resources" : { "derecho" : { "timelimit" : "00:30:00" } } },
         "[build_cmake.*nvhpc.*]" : { "resources" : { "derecho" : { "timelimit" : "00:30:00" } } },
         // Make builds
