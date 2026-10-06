@@ -28,7 +28,8 @@ def add_build_for_envs_cmake( orch ):
       action.config["sm"]          = sm
 
       action.outputs["install_dir"] = action.config["install_dir"]
-      action.outputs["build_dir"]   = action.config["install_dir"]
+      action.outputs["build_dir"]   = action.config["build_dir"]
+      action.outputs["diffwrf_nc"]  = action.config["install_dir"] + "/bin/diffwrf_nc"
       args = []
 
       config_cmd = [ "-p ${{ config.compiler }}", "-d", "${{ config.build_dir }}", "-i", "${{ config.install_dir }}" ]
@@ -73,6 +74,7 @@ def add_build_for_envs_make( orch ):
     
     action.outputs["install_dir"] = action.config["install_dir"]
     action.outputs["build_dir"]   = action.config["install_dir"]
+    action.outputs["diffwrf_nc"]  = action.config["install_dir"] + "/external/io_netcdf/diffwrf"
     args = []
 
     args.extend( [ "-c", "${{ config.compile_opt }}", "-n", "${{ config.nesting }}" ] )

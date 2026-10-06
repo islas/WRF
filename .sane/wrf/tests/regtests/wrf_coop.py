@@ -19,7 +19,7 @@ def wrf_coop_reg_tests( orch ):
                   "wrf_case_path" : "${{ host_info.config.wrf_coop.run_wrf_case_path }}",
                   "wrf_met_path"  : "${{ host_info.config.wrf_coop.run_wrf_met_path }}",
                   "wrf_met_folder": "em_real",
-                  "wrf_dir"       : "${{ dependencies.${{ config.build }}.outputs.build_dir }}/test/${{ config.wrf_dir }}",
+                  "wrf_dir"       : "${{ dependencies.${{ config.build }}.outputs.install_dir }}/test/${{ config.wrf_dir }}",
                   "resources"     : { "cpus" : 1 },
                   "config" :
                   {
