@@ -42,9 +42,9 @@ class WRFBase( sane.Action ):
     #: List of other folders to pull data from, all data symlinked to run dir
     self.extra_data     = []
 
-    #: Namelist patches indexed by basename of namelist file and applied as a recursive
-    #: dictionary update to the namelist, e.g. { "my_run.nml" : { "dx" : 1500, "history_interval" : [600, 30] } }
-    self.nml_patches    = {}
+    #: Namelist patch applied as a recursive dictionary update to the namelist with groups,
+    #: e.g. { "domains" : { "dx" : 1500 }, "time_control" : { "history_interval" : [600, 30] } }
+    self.nml_patch    = {}
 
     # Make sure we can pass on all this info
     self.outputs["wrf_case"]       = "${{ wrf_case }}"
@@ -60,27 +60,24 @@ class WRFBase( sane.Action ):
     self.outputs["mpi_ranks"]      = "${{ mpi_ranks }}"
     self.outputs["omp_threads"]    = "${{ omp_threads }}"
     self.outputs["extra_data"]     = "${{ extra_data }}"
-    self.outputs["nml_patches"]    = "${{ nml_patches }}"
+    self.outputs["nml_patch"]      = "${{ nml_patch }}"
 
-  def patch_nml( self, nml ):
+  def patch_nml( self, nml, patch ):
     """Rudimentary patching of a namelist
 
-    Uses the sane framework recursive dictionary update to apply changes if a key
-    that matches the basename of the ``nml`` is found in ``self.nml_patches``.
-    Namelists are read using the ``nml.py`` interface as simple key-value pairs
+    Uses the sane framework recursive dictionary update to apply a patch to namelist.
+    Namelist is read using the ``nml.py`` interface as simple key-value pairs
     under group identifiers. Lists are supported.
     """
-    nml_basename = os.path.basename( nml )
-    if nml_basename in self.nml_patches:
-      nml_dict = nml_io.load_nml( nml )
+    nml_dict = nml_io.load_nml( nml )
 
-      nml_dict_patched = sane.helpers.recursive_update( copy.deepcopy(nml_dict), self.nml_patches[nml_basename] )
+    nml_dict_patched = sane.helpers.recursive_update( copy.deepcopy(nml_dict), patch )
 
-      if nml_dict == nml_dict_patched:
-        self.log( f"Namelist '{nml}' already patched" )
-      else:
-        self.log( f"Applying patch to '{nml}'" )
-        nml_io.dump_nml( nml, nml_dict_patched )
+    if nml_dict == nml_dict_patched:
+      self.log( f"Namelist '{nml}' already patched" )
+    else:
+      self.log( f"Applying patch to '{nml}'" )
+      nml_io.dump_nml( nml, nml_dict_patched )
 
   def load_extra_options( self, options, origin, **kwargs ):
     self.wrf_case       = options.pop( "wrf_case", None )
@@ -100,7 +97,7 @@ class WRFBase( sane.Action ):
 
     self.modify_environ    = options.pop( "modify_environ",  self.modify_environ )
     self.extra_data.extend( options.pop( "extra_data",  [] ) )
-    sane.helpers.recursive_update( self.nml_patches, options.pop( "nml_patches",  {} ) )
+    sane.helpers.recursive_update( self.nml_patch, options.pop( "nml_patch",  {} ) )
     super().load_extra_options( options, origin, **kwargs )
 
   def pre_launch( self ):
@@ -239,7 +236,7 @@ class InitWRF( WRFBase ):
     self.setup_wrf()
     self.setup_metfiles()
 
-    self.patch_nml( os.path.join( self.wrf_run_dir, self.wrf_nml ) )
+    self.patch_nml( os.path.join( self.wrf_run_dir, self.wrf_nml ), self.nml_patch )
 
   def setup_metfiles( self ):
     """Symlink metfiles"""
@@ -290,7 +287,8 @@ class RunWRF( WRFBase ):
                 "wrf_run_dir",
                 "modify_environ",
                 "wrf_nml",
-                "extra_data"
+                "extra_data",
+                "nml_patch"
                 ]
       inherit = []
       for attr in attrs:
@@ -318,7 +316,7 @@ class RunWRF( WRFBase ):
       # Copy files needed from dep
       self.setup_input()
 
-    self.patch_nml( os.path.join( self.wrf_run_dir, self.wrf_nml ) )
+    self.patch_nml( os.path.join( self.wrf_run_dir, self.wrf_nml ), self.nml_patch )
 
   def setup_input( self ):
     """Symlink input files from InitWRF if run directory is different"""
@@ -359,7 +357,7 @@ class RunWRFRestart( RunWRF ):
 
   def pre_run( self ):
     super().pre_run()
-    self.patch_nml( os.path.join( self.wrf_run_dir, self.wrf_restart_nml ) )
+    self.patch_nml( os.path.join( self.wrf_run_dir, self.wrf_restart_nml ), self.nml_patch )
 
   def run( self ):
     retval = super().run()
