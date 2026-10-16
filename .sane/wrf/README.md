@@ -311,6 +311,7 @@ the same.
 
     Current options are:
     ```python
+    ### TODO REVISE
     #### Applicable to all types of runs ####
     #: Location of executables
     self.wrf_dir        = "test/em_real"
